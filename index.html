@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر كراتشي - عالم التوابل والبهارات</title>
+    <title>متجر كراتشي</title>
     <style>
         :root {
             --primary: #d97706;
@@ -13,43 +13,48 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --accent: #22c55e;
+            --accent-hover: #16a34a;
             --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --info: #0284c7;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 95px; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            padding-bottom: 90px;
-        }
-
-        /* رأس الصفحة والمعلومات */
+        /* رأس الصفحة */
         header {
             background: var(--card-bg);
             padding: 20px 15px;
             text-align: center;
             border-bottom: 3px solid var(--primary);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
         }
 
-        header h1 {
-            font-size: 1.6rem;
-            color: #fbbf24;
-            margin-bottom: 8px;
+        .admin-trigger {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            background: #334155;
+            color: #cbd5e1;
+            border: 1px solid #475569;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: bold;
         }
+
+        header h1 { font-size: 1.6rem; color: #fbbf24; margin-bottom: 6px; }
+        header p { color: #e2e8f0; font-size: 0.85rem; }
 
         .shop-info {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             margin-top: 10px;
         }
@@ -61,14 +66,15 @@
             border: 1px solid #334155;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            text-align: center;
         }
 
-        /* التصنيفات */
+        /* شريط التصنيفات */
         .categories-bar {
             display: flex;
-            gap: 10px;
-            padding: 15px;
+            gap: 8px;
+            padding: 12px 15px;
             overflow-x: auto;
             position: sticky;
             top: 0;
@@ -81,7 +87,7 @@
             background: var(--card-bg);
             color: var(--text-muted);
             border: 1px solid #334155;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 20px;
             cursor: pointer;
             font-size: 0.85rem;
@@ -110,48 +116,50 @@
             background: var(--card-bg);
             border: 1px solid #334155;
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             text-align: center;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            position: relative;
         }
 
-        .product-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        .product-img-box {
+            width: 100%;
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #0f172a;
         }
 
-        .product-title {
-            font-size: 0.95rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+        .product-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .product-icon { font-size: 2.5rem; }
 
-        .product-price {
-            color: #fbbf24;
-            font-weight: bold;
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-        }
+        .product-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 4px; min-height: 2.4em; display: flex; align-items: center; justify-content: center; }
+        .product-price { color: #fbbf24; font-weight: bold; margin-bottom: 6px; font-size: 0.9rem; }
+        .stock-tag { font-size: 0.75rem; color: #f87171; font-weight: bold; margin-bottom: 8px; }
 
         .btn-add {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 8px;
+            padding: 9px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 0.85rem;
             transition: background 0.2s;
         }
 
-        .btn-add:hover {
-            background: var(--primary-hover);
-        }
+        .btn-add:hover { background: var(--primary-hover); }
+        .btn-add:disabled { background: #475569; cursor: not-allowed; color: #94a3b8; }
 
-        /* الشريط العائم للسلة */
+        /* شريط السلة العائم */
         .floating-cart-bar {
             position: fixed;
             bottom: 0;
@@ -171,21 +179,19 @@
             background: var(--accent);
             color: #000;
             font-weight: bold;
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 8px;
             border: none;
             cursor: pointer;
+            font-size: 0.9rem;
         }
 
-        /* نافذة إتمام الطلب (Modal) */
+        /* النوافذ المنبثقة العامة */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
             z-index: 200;
             overflow-y: auto;
             padding: 15px;
@@ -196,10 +202,10 @@
         .modal-content {
             background: var(--card-bg);
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
             border-radius: 12px;
             border: 1px solid #334155;
-            padding: 20px;
+            padding: 18px;
             position: relative;
         }
 
@@ -212,42 +218,8 @@
             margin-bottom: 15px;
         }
 
-        .cart-item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #334155;
-            font-size: 0.85rem;
-        }
-
-        .qty-controls {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .qty-btn {
-            background: #334155;
-            color: #fff;
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
-
+        .form-group { margin-bottom: 12px; text-align: right; }
+        .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; font-weight: bold; }
         .form-control {
             width: 100%;
             padding: 10px;
@@ -256,30 +228,6 @@
             border-radius: 6px;
             color: #fff;
             font-size: 0.9rem;
-        }
-
-        .delivery-toggle {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .toggle-option {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        .toggle-option.selected {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
         }
 
         .btn-submit {
@@ -291,23 +239,64 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
-            margin-top: 10px;
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        /* نافذة الميزان */
+        .weight-choice-box { display: flex; gap: 10px; margin-bottom: 12px; }
+        .weight-choice-card { flex: 1; background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 8px; text-align: center; }
+        .min-order-note {
+            background: #1e1b4b;
+            border: 1px solid #4338ca;
+            color: #a5b4fc;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-align: center;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        /* السلة */
+        .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #334155; font-size: 0.85rem; }
+        .delivery-toggle { display: flex; gap: 10px; margin-bottom: 15px; }
+        .toggle-option { flex: 1; text-align: center; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .toggle-option.selected { background: var(--primary); border-color: var(--primary); color: white; }
+
+        /* عناصر لوحة التحكم */
+        .admin-section {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        .admin-section-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; }
+        .admin-item-card {
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
+    <!-- رأس الصفحة -->
     <header>
-        <h1>🏪 متجر كراتشي</h1>
-        <p style="color: #fbbf24; font-size: 0.9rem;">عالم التوابل، الأعشاب والمكسرات الفاخرة</p>
+        <button class="admin-trigger" onclick="openAdminLogin()">⚙️ الإدارة</button>
+        <h1 id="dispShopName">🏪 متجر كراتشي</h1>
+        <p id="dispShopTagline">عالم التوابل، الأعشاب والمكسرات الفاخرة</p>
         
         <div class="shop-info">
-            <div class="info-pill">⏰ مواعيد العمل: 10:00 ص – 8:00 م</div>
-            <div class="info-pill">📍 التوصيل متوفر لجميع المناطق</div>
+            <div class="info-pill" id="dispShopHours">⏰ 10:00 ص – 10:00 م (السبت - الخميس) | الجمعة: مغلق</div>
+            <div class="info-pill" id="dispShopDelivery">📍 التوصيل متوفر لجميع المناطق</div>
         </div>
     </header>
 
+    <!-- شريط الأقسام -->
     <div class="categories-bar">
         <button class="cat-btn active" onclick="filterCategory('all', this)">كل الأصناف</button>
         <button class="cat-btn" onclick="filterCategory('spices', this)">التوابل والبهارات</button>
@@ -316,26 +305,64 @@
         <button class="cat-btn" onclick="filterCategory('canned', this)">المعلبات والزيوت</button>
     </div>
 
+    <!-- شبكة المنتجات -->
     <div class="products-grid" id="productsGrid"></div>
 
+    <!-- الشريط السفلي للسلة -->
     <div class="floating-cart-bar">
         <div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">إجمالي السلة:</div>
-            <div style="font-size: 1.2rem; font-weight: bold; color: #22c55e;" id="barCartTotal">0.00 د.ل</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">إجمالي السلة:</div>
+            <div style="font-size: 1.15rem; font-weight: bold; color: #22c55e;" id="barCartTotal">0.00 د.ل</div>
         </div>
         <button class="btn-open-cart" onclick="openCartModal()">🛒 تأكيد الطلب (<span id="cartCount">0</span>)</button>
     </div>
 
+    <!-- نافذة تحديد الوزن / السعر للزبون -->
+    <div class="modal" id="weightModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="weightModalTitle">⚖️ تحديد الكمية</h3>
+                <button onclick="closeModal('weightModal')" style="background:none; border:none; color:#fff; font-size:1.2rem; cursor:pointer;">✕</button>
+            </div>
+            
+            <p id="weightModalPriceHint" style="font-size:0.85rem; color:#fbbf24; margin-bottom:10px; text-align:center;"></p>
+
+            <div class="min-order-note">
+                ⚖️ <b>الحد الأدنى بالوزن:</b> 50 جرام.<br>
+                💰 <b>الحد الأدنى إذا أدخلت القيمة المالية:</b> 5.00 د.ل.
+            </div>
+
+            <div class="weight-choice-box">
+                <div class="weight-choice-card">
+                    <label style="font-size:0.8rem; color:#94a3b8; display:block; margin-bottom:6px;">الوزن بالجرام:</label>
+                    <input type="number" id="inputGrams" class="form-control" placeholder="أقل شيء 50" min="50" oninput="onGramsChange()">
+                </div>
+                <div class="weight-choice-card">
+                    <label style="font-size:0.8rem; color:#94a3b8; display:block; margin-bottom:6px;">أو القيمة بالدينار:</label>
+                    <input type="number" step="0.5" id="inputDinar" class="form-control" placeholder="أقل شيء 5" min="5" oninput="onDinarChange()">
+                </div>
+            </div>
+
+            <div style="background:#0f172a; padding:10px; border-radius:8px; text-align:center; margin-bottom:15px; border:1px solid #334155;">
+                <div style="font-size:0.8rem; color:#94a3b8;">ملخص الصنف المختار:</div>
+                <div style="font-size:1.1rem; font-weight:bold; color:#22c55e; margin-top:4px;" id="weightSummaryText">0 جرام = 0.00 د.ل</div>
+            </div>
+
+            <button class="btn-submit" onclick="confirmWeightAddToCart()">🛒 إضافة للسلة</button>
+        </div>
+    </div>
+
+    <!-- نافذة سلة المشتريات وتأكيد الطلب -->
     <div class="modal" id="cartModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>فاتورة الطلب</h3>
-                <button onclick="closeCartModal()" style="background:none; border:none; color:#fff; font-size:1.2rem; cursor:pointer;">✕</button>
+                <button onclick="closeModal('cartModal')" style="background:none; border:none; color:#fff; font-size:1.2rem; cursor:pointer;">✕</button>
             </div>
 
-            <div id="modalCartItems" style="max-height: 180px; overflow-y: auto; margin-bottom: 15px;"></div>
+            <div id="modalCartItems" style="max-height: 180px; overflow-y: auto; margin-bottom: 12px;"></div>
             
-            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; padding: 10px 0; border-top:1px solid #334155; margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; padding: 10px 0; border-top:1px solid #334155; margin-bottom:12px;">
                 <span>المجموع الكلي:</span>
                 <span style="color:#22c55e;" id="modalCartTotal">0.00 د.ل</span>
             </div>
@@ -365,73 +392,194 @@
 
             <div class="form-group">
                 <label>طريقة الدفع:</label>
-                <select id="paymentMethod" class="form-control">
-                    </select>
+                <select id="paymentMethod" class="form-control"></select>
             </div>
 
             <button class="btn-submit" onclick="sendOrderViaWhatsApp()">📲 إرسال الطلب عبر واتساب</button>
         </div>
     </div>
 
+    <!-- نافذة تسجيل دخول الإدارة -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content" style="max-width: 320px; text-align: center;">
+            <div class="modal-header">
+                <h3>دخول المدير</h3>
+                <button onclick="closeModal('loginModal')" style="background:none; border:none; color:#fff; font-size:1.2rem; cursor:pointer;">✕</button>
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+                <label>اسم المستخدم:</label>
+                <input type="text" id="adminUserLogin" class="form-control" placeholder="admin" style="text-align: center;">
+            </div>
+            <div class="form-group">
+                <label>رمز المرور:</label>
+                <input type="password" id="adminPassLogin" class="form-control" placeholder="•••••" style="text-align: center;">
+            </div>
+            <button class="btn-submit" onclick="checkAdminLogin()">دخول</button>
+        </div>
+    </div>
+
+    <!-- لوحة تحكم الإدارة الكاملة (Master Admin Panel) -->
+    <div class="modal" id="adminDashboardModal">
+        <div class="modal-content" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3 style="color:#fbbf24;">⚙️ لوحة إدارة المتجر الشاملة</h3>
+                <button onclick="closeModal('adminDashboardModal')" style="background:none; border:none; color:#fff; font-size:1.2rem; cursor:pointer;">✕</button>
+            </div>
+
+            <!-- 1. تعديل بيانات الدخول -->
+            <div class="admin-section">
+                <div class="admin-section-title" style="color:#38bdf8;">🔐 بيانات تسجيل دخول المدير</div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>اسم المستخدم:</label>
+                        <input type="text" id="adminUserEdit" class="form-control">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>رمز المرور الجديد:</label>
+                        <input type="text" id="adminPassEdit" class="form-control">
+                    </div>
+                </div>
+                <button class="btn-submit" style="background:#0284c7; color:#fff; padding:7px; font-size:0.85rem;" onclick="saveAdminAuth()">💾 تحديث بيانات الدخول</button>
+            </div>
+
+            <!-- 2. إعدادات المتجر العامة -->
+            <div class="admin-section">
+                <div class="admin-section-title" style="color:var(--primary);">🏪 معلومات ونصوص المتجر الرئيسية</div>
+                <div class="form-group">
+                    <label>اسم المتجر (في الأعلى):</label>
+                    <input type="text" id="adminShopName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>الوصف أسفل الاسم:</label>
+                    <input type="text" id="adminShopTagline" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>مواعيد العمل:</label>
+                    <input type="text" id="adminShopHours" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>نص التوصيل:</label>
+                    <input type="text" id="adminShopDelivery" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>رقم هاتف الواتساب (مفتاح دولي):</label>
+                    <input type="text" id="adminShopPhone" class="form-control">
+                </div>
+                <button class="btn-submit" style="padding:8px; font-size:0.85rem;" onclick="saveGeneralSettings()">💾 حفظ معلومات المتجر</button>
+            </div>
+
+            <!-- 3. إضافة صنف جديد -->
+            <div class="admin-section">
+                <div class="admin-section-title" style="color:var(--accent);">➕ إضافة صنف جديد</div>
+                <div class="form-group">
+                    <label>اسم الصنف:</label>
+                    <input type="text" id="newProdName" class="form-control" placeholder="مثال: فلفل أسود حب">
+                </div>
+                <div class="form-group">
+                    <label>القسم:</label>
+                    <select id="newProdCat" class="form-control" onchange="toggleNewProdUnitLabel()">
+                        <option value="spices">التوابل والبهارات</option>
+                        <option value="herbs">الأعشاب الطبيعية</option>
+                        <option value="nuts">المكسرات والحبوب</option>
+                        <option value="canned">المعلبات والزيوت</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>نوع البيع والتسعير:</label>
+                    <select id="newProdUnit" class="form-control" onchange="toggleNewProdUnitLabel()">
+                        <option value="weight">بالميزان (سعر الكيلو / 1000 جرام)</option>
+                        <option value="piece">بالقطعة / العبوة الواحدة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="lblNewProdPrice">السعر (د.ل):</label>
+                    <input type="number" step="0.5" id="newProdPrice" class="form-control" placeholder="مثال: 35">
+                </div>
+                <div class="form-group">
+                    <label>صورة الصنف (من الكاميرا أو الاستوديو):</label>
+                    <input type="file" id="newProdImg" class="form-control" accept="image/*">
+                </div>
+                <button class="btn-submit" onclick="addNewProduct()">➕ إضافة الصنف إلى المتجر</button>
+            </div>
+
+            <!-- 4. تعديل الأصناف الحالية بالكامل -->
+            <div class="admin-section">
+                <div class="admin-section-title" style="color:#fbbf24;">📦 إدارة وتعديل كافة الأصناف الحالية</div>
+                <div id="adminProductsList" style="max-height: 380px; overflow-y: auto;"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // رقم متجر كراتشي (ليبيا)
-        const STORE_PHONE = "218922281994"; 
+        // الأصناف الافتراضية
+        const initialProducts = [
+            { id: 1, name: 'كركم هندي صافي', price: 35.0, unit: 'weight', cat: 'spices', available: true, icon: '🟡', img: '' },
+            { id: 2, name: 'فلفل أحمر حار (بسباس)', price: 30.0, unit: 'weight', cat: 'spices', available: true, icon: '🌶️', img: '' },
+            { id: 3, name: 'فلفل أسود حب/مطحون', price: 55.0, unit: 'weight', cat: 'spices', available: true, icon: '⚫', img: '' },
+            { id: 4, name: 'خلطة بهارات كراتشي المشكلة', price: 60.0, unit: 'weight', cat: 'spices', available: true, icon: '🍲', img: '' },
+            { id: 5, name: 'كمون حوت أصلي', price: 45.0, unit: 'weight', cat: 'spices', available: true, icon: '🐟', img: '' },
+            { id: 6, name: 'قرفة سيلانية فاخرة', price: 50.0, unit: 'weight', cat: 'spices', available: true, icon: '🪵', img: '' },
+            
+            { id: 7, name: 'زعتر بري مجفف', price: 35.0, unit: 'weight', cat: 'herbs', available: true, icon: '🍃', img: '' },
+            { id: 8, name: 'بابونج زهور طبيعية', price: 50.0, unit: 'weight', cat: 'herbs', available: true, icon: '🌼', img: '' },
+            { id: 9, name: 'إكليل الجبل (روزماري)', price: 40.0, unit: 'weight', cat: 'herbs', available: true, icon: '🌱', img: '' },
 
-        const products = [
-            // التوابل والبهارات
-            { id: 1, name: 'كركم هندي صافي', price: 4.0, cat: 'spices', icon: '🟡' },
-            { id: 2, name: 'فلفل أحمر حار (بسباس)', price: 5.0, cat: 'spices', icon: '🌶️' },
-            { id: 3, name: 'فلفل أسود حب/مطحون', price: 6.5, cat: 'spices', icon: '⚫' },
-            { id: 4, name: 'خلطة بهارات كراتشي المشكلة', price: 7.0, cat: 'spices', icon: '🍲' },
-            { id: 5, name: 'كمون حوت أصلي', price: 5.5, cat: 'spices', icon: '🐟' },
-            { id: 6, name: 'قرفة سيلانية فاخرة', price: 6.0, cat: 'spices', icon: '🪵' },
-            { id: 7, name: 'كزبر وكروية خلطة', price: 4.5, cat: 'spices', icon: '🌿' },
-            { id: 8, name: 'زنجبيل مطحون طازج', price: 5.0, cat: 'spices', icon: '🫚' },
+            { id: 10, name: 'لوز محمص فاخر', price: 70.0, unit: 'weight', cat: 'nuts', available: true, icon: '🥜', img: '' },
+            { id: 11, name: 'كاجو محمص ومملح', price: 85.0, unit: 'weight', cat: 'nuts', available: true, icon: '🌰', img: '' },
+            { id: 12, name: 'فستق حلبي محمص', price: 110.0, unit: 'weight', cat: 'nuts', available: true, icon: '🟢', img: '' },
 
-            // الأعشاب الطبيعية
-            { id: 9, name: 'زعتر بري مجفف', price: 4.0, cat: 'herbs', icon: '🍃' },
-            { id: 10, name: 'بابونج زهور طبيعية', price: 6.0, cat: 'herbs', icon: '🌼' },
-            { id: 11, name: 'إكليل الجبل (روزماري)', price: 5.0, cat: 'herbs', icon: '🌱' },
-            { id: 12, name: 'شيح جبلي أصلي', price: 4.5, cat: 'herbs', icon: '🌾' },
-            { id: 13, name: 'بردقوش عضوي', price: 5.5, cat: 'herbs', icon: '🪴' },
-            { id: 14, name: 'كركديه أحمر زهور', price: 6.5, cat: 'herbs', icon: '🌺' },
-
-            // المكسرات والحبوب
-            { id: 15, name: 'لوز محمص فاخر', price: 18.0, cat: 'nuts', icon: '🥜' },
-            { id: 16, name: 'كاجو محمص ومملح', price: 22.0, cat: 'nuts', icon: '🌰' },
-            { id: 17, name: 'فستق حلبي محمص', price: 28.0, cat: 'nuts', icon: '🟢' },
-            { id: 18, name: 'عين جمل مقشر (جوز)', price: 20.0, cat: 'nuts', icon: '🧠' },
-            { id: 19, name: 'بذور الشيا العضوية', price: 8.0, cat: 'nuts', icon: '⚪' },
-            { id: 20, name: 'سمسم محمص بلدي', price: 6.0, cat: 'nuts', icon: '✨' },
-            { id: 21, name: 'برغل تركي ممتاز', price: 5.0, cat: 'nuts', icon: '🥣' },
-
-            // المعلبات والزيوت
-            { id: 22, name: 'زيت زيتون بكر ممتاز', price: 30.0, cat: 'canned', icon: '🫒' },
-            { id: 23, name: 'طماطم معجون علب', price: 3.5, cat: 'canned', icon: '🥫' },
-            { id: 24, name: 'هريسة عربية حارة', price: 4.0, cat: 'canned', icon: '🔥' },
-            { id: 25, name: 'عسل سدر طبيعي', price: 45.0, cat: 'canned', icon: '🍯' },
-            { id: 26, name: 'خل أبيض / تفاح', price: 3.0, cat: 'canned', icon: '🍾' },
-            { id: 27, name: 'طحينة سمسم صافية', price: 9.0, cat: 'canned', icon: '🍶' }
+            { id: 13, name: 'عسل سدر طبيعي (فازو)', price: 45.0, unit: 'piece', cat: 'canned', available: true, icon: '🍯', img: '' },
+            { id: 14, name: 'زيت زيتون بكر ممتاز (لتر)', price: 30.0, unit: 'piece', cat: 'canned', available: true, icon: '🫒', img: '' }
         ];
 
-        let cart = {}; // { productId: qty }
-        let selectedService = 'delivery'; // 'delivery' أو 'pickup'
+        // إعدادات المتجر المخزنة
+        let products = JSON.parse(localStorage.getItem('karachi_products_final')) || initialProducts;
+        let STORE_PHONE = localStorage.getItem('karachi_phone_final') || "218922281994";
+        let shopName = localStorage.getItem('karachi_name_final') || "🏪 متجر كراتشي";
+        let shopTagline = localStorage.getItem('karachi_tagline_final') || "عالم التوابل، الأعشاب والمكسرات الفاخرة";
+        let shopHours = localStorage.getItem('karachi_hours_final') || "⏰ 10:00 ص – 10:00 م (السبت - الخميس) | الجمعة: مغلق";
+        let shopDelivery = localStorage.getItem('karachi_delivery_final') || "📍 التوصيل متوفر لجميع المناطق";
+        
+        let ADMIN_USER = localStorage.getItem('karachi_admin_user_final') || "admin";
+        let ADMIN_PASS = localStorage.getItem('karachi_admin_pass_final') || "12367";
 
-        // عرض المنتجات
+        let cart = [];
+        let selectedService = 'delivery';
+        let currentWeightProduct = null;
+        let lastEditedField = 'grams';
+
+        function initApp() {
+            document.getElementById('dispShopName').innerText = shopName;
+            document.getElementById('dispShopTagline').innerText = shopTagline;
+            document.getElementById('dispShopHours').innerText = shopHours;
+            document.getElementById('dispShopDelivery').innerText = shopDelivery;
+            renderProducts();
+        }
+
+        // عرض المنتجات للزبائن
         function renderProducts(cat = 'all') {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
-
             const list = (cat === 'all') ? products : products.filter(p => p.cat === cat);
 
             list.forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
+
+                const isAvailable = p.available !== false;
+                let priceLabel = (p.unit === 'weight') ? `${parseFloat(p.price).toFixed(2)} د.ل / كجم` : `${parseFloat(p.price).toFixed(2)} د.ل / قطعة`;
+                let btnAction = (p.unit === 'weight') ? `openWeightModal(${p.id})` : `addPieceToCart(${p.id})`;
+
+                let imgHtml = p.img ? `<img src="${p.img}" alt="${p.name}">` : `<span class="product-icon">${p.icon || '📦'}</span>`;
+
                 card.innerHTML = `
-                    <div class="product-icon">${p.icon}</div>
+                    <div class="product-img-box">${imgHtml}</div>
                     <div class="product-title">${p.name}</div>
-                    <div class="product-price">${p.price.toFixed(2)} د.ل</div>
-                    <button class="btn-add" onclick="addToCart(${p.id})">أضف للسلة 🛒</button>
+                    <div class="product-price">${priceLabel}</div>
+                    ${!isAvailable ? '<div class="stock-tag">⚠️ غير متوفر حالياً</div>' : ''}
+                    <button class="btn-add" ${!isAvailable ? 'disabled' : ''} onclick="${btnAction}">
+                        ${!isAvailable ? 'غير متوفر' : (p.unit === 'weight' ? 'تحديد الوزن / السعر ⚖️' : 'أضف للسلة 🛒')}
+                    </button>
                 `;
                 grid.appendChild(card);
             });
@@ -443,34 +591,114 @@
             renderProducts(cat);
         }
 
-        // عمليات السلة
-        function addToCart(id) {
-            cart[id] = (cart[id] || 0) + 1;
+        // إضافة بالقطعة
+        function addPieceToCart(prodId) {
+            const prod = products.find(p => p.id === prodId);
+            if (!prod || prod.available === false) return;
+
+            const existing = cart.find(item => item.prodId === prodId && item.unit === 'piece');
+            if (existing) {
+                existing.qty += 1;
+                existing.totalPrice = existing.qty * prod.price;
+            } else {
+                cart.push({
+                    cartItemId: Date.now(),
+                    prodId: prod.id,
+                    name: prod.name,
+                    unit: 'piece',
+                    qty: 1,
+                    unitPrice: prod.price,
+                    totalPrice: prod.price,
+                    detail: '1 قطعة'
+                });
+            }
             updateCartUI();
         }
 
-        function changeQty(id, delta) {
-            if (cart[id]) {
-                cart[id] += delta;
-                if (cart[id] <= 0) delete cart[id];
+        // نافذة الميزان
+        function openWeightModal(prodId) {
+            currentWeightProduct = products.find(p => p.id === prodId);
+            if (!currentWeightProduct || currentWeightProduct.available === false) return;
+
+            lastEditedField = 'grams';
+            document.getElementById('weightModalTitle').innerText = `⚖️ ${currentWeightProduct.name}`;
+            document.getElementById('weightModalPriceHint').innerText = `سعر الكيلو (1000 جرام): ${currentWeightProduct.price.toFixed(2)} د.ل`;
+            
+            document.getElementById('inputGrams').value = '';
+            document.getElementById('inputDinar').value = '';
+            document.getElementById('weightSummaryText').innerText = '0 جرام = 0.00 د.ل';
+
+            document.getElementById('weightModal').style.display = 'flex';
+        }
+
+        function onGramsChange() {
+            if (!currentWeightProduct) return;
+            lastEditedField = 'grams';
+            const grams = parseFloat(document.getElementById('inputGrams').value) || 0;
+            const price = (grams / 1000) * currentWeightProduct.price;
+            
+            document.getElementById('inputDinar').value = price ? price.toFixed(2) : '';
+            document.getElementById('weightSummaryText').innerText = `${grams} جرام = ${price.toFixed(2)} د.ل`;
+        }
+
+        function onDinarChange() {
+            if (!currentWeightProduct) return;
+            lastEditedField = 'dinar';
+            const dinar = parseFloat(document.getElementById('inputDinar').value) || 0;
+            const grams = (dinar / currentWeightProduct.price) * 1000;
+            
+            document.getElementById('inputGrams').value = grams ? Math.round(grams) : '';
+            document.getElementById('weightSummaryText').innerText = `${Math.round(grams)} جرام = ${dinar.toFixed(2)} د.ل`;
+        }
+
+        function confirmWeightAddToCart() {
+            const grams = parseFloat(document.getElementById('inputGrams').value) || 0;
+            const dinar = parseFloat(document.getElementById('inputDinar').value) || 0;
+
+            if (lastEditedField === 'grams') {
+                if (grams < 50) {
+                    alert('⚠️ عذراً، الحد الأدنى للطلب بالوزن هو 50 جرام.');
+                    return;
+                }
+            } else {
+                if (dinar < 5) {
+                    alert('⚠️ عذراً، الحد الأدنى للطلب بالقيمة المالية هو 5.00 د.ل.');
+                    return;
+                }
             }
+
+            if (!grams || grams <= 0 || !dinar || dinar <= 0) {
+                alert('يرجى تحديد الوزن أو القيمة المطلوبة.');
+                return;
+            }
+
+            cart.push({
+                cartItemId: Date.now(),
+                prodId: currentWeightProduct.id,
+                name: currentWeightProduct.name,
+                unit: 'weight',
+                qty: 1,
+                totalPrice: dinar,
+                detail: `${Math.round(grams)} جرام`
+            });
+
+            closeModal('weightModal');
+            updateCartUI();
+        }
+
+        function removeCartItem(cartItemId) {
+            cart = cart.filter(item => item.cartItemId !== cartItemId);
             updateCartUI();
             renderModalCart();
         }
 
         function updateCartUI() {
             let total = 0;
-            let count = 0;
-            for (let id in cart) {
-                const prod = products.find(p => p.id == id);
-                total += prod.price * cart[id];
-                count += cart[id];
-            }
+            cart.forEach(item => total += item.totalPrice);
             document.getElementById('barCartTotal').innerText = `${total.toFixed(2)} د.ل`;
-            document.getElementById('cartCount').innerText = count;
+            document.getElementById('cartCount').innerText = cart.length;
         }
 
-        // خيارات التوصيل والاستلام وطرق الدفع
         function selectServiceType(type) {
             selectedService = type;
             const optDel = document.getElementById('optDelivery');
@@ -482,8 +710,6 @@
                 optDel.classList.add('selected');
                 optPick.classList.remove('selected');
                 addrField.style.display = 'block';
-
-                // التوصيل: نقدًا (كاش) أو حوالة فقط
                 paySelect.innerHTML = `
                     <option value="نقدًا عند الاستلام (كاش)">نقدًا عند التوصيل (كاش)</option>
                     <option value="حوالة مصرفية">حوالة مصرفية (مسبقة)</option>
@@ -492,8 +718,6 @@
                 optPick.classList.add('selected');
                 optDel.classList.remove('selected');
                 addrField.style.display = 'none';
-
-                // التجهيز: نقدًا، بطاقة مصرفية، أو حوالة
                 paySelect.innerHTML = `
                     <option value="نقدًا في المحل (كاش)">نقدًا في المحل (كاش)</option>
                     <option value="بطاقة مصرفية / تداول">بطاقة مصرفية (في المحل)</option>
@@ -502,9 +726,8 @@
             }
         }
 
-        // نافذة السلة
         function openCartModal() {
-            if (Object.keys(cart).length === 0) {
+            if (cart.length === 0) {
                 alert('⚠️ السلة فارغة! اختر بعض الأصناف أولاً.');
                 return;
             }
@@ -513,90 +736,282 @@
             document.getElementById('cartModal').style.display = 'flex';
         }
 
-        function closeCartModal() {
-            document.getElementById('cartModal').style.display = 'none';
-        }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function renderModalCart() {
             const container = document.getElementById('modalCartItems');
             container.innerHTML = '';
             let total = 0;
 
-            for (let id in cart) {
-                const prod = products.find(p => p.id == id);
-                const itemTotal = prod.price * cart[id];
-                total += itemTotal;
-
+            cart.forEach(item => {
+                total += item.totalPrice;
                 const row = document.createElement('div');
                 row.className = 'cart-item-row';
                 row.innerHTML = `
                     <div>
-                        <div style="font-weight:bold;">${prod.icon} ${prod.name}</div>
-                        <div style="font-size:0.75rem; color:#94a3b8;">${prod.price.toFixed(2)} × ${cart[id]} = ${itemTotal.toFixed(2)} د.ل</div>
+                        <div style="font-weight:bold;">${item.name}</div>
+                        <div style="font-size:0.75rem; color:#94a3b8;">${item.detail} = ${item.totalPrice.toFixed(2)} د.ل</div>
                     </div>
-                    <div class="qty-controls">
-                        <button class="qty-btn" onclick="changeQty(${prod.id}, -1)">-</button>
-                        <span>${cart[id]}</span>
-                        <button class="qty-btn" onclick="changeQty(${prod.id}, 1)">+</button>
+                    <div>
+                        <button class="qty-btn" style="background:#ef4444; color:#fff; border:none; width:24px; height:24px; border-radius:4px; cursor:pointer;" onclick="removeCartItem(${item.cartItemId})">✕</button>
                     </div>
                 `;
                 container.appendChild(row);
-            }
+            });
 
             document.getElementById('modalCartTotal').innerText = `${total.toFixed(2)} د.ل`;
         }
 
-        // إنشاء وإرسال رسالة الطلب عبر واتساب
         function sendOrderViaWhatsApp() {
             const name = document.getElementById('custName').value.trim();
             const phone = document.getElementById('custPhone').value.trim();
             const address = document.getElementById('custAddress').value.trim();
             const payment = document.getElementById('paymentMethod').value;
 
-            if (!name) {
-                alert('يرجى كتابة الاسم.');
-                return;
-            }
-            if (!phone) {
-                alert('يرجى كتابة رقم الهاتف.');
+            if (!name || !phone) {
+                alert('يرجى إدخال الاسم ورقم الهاتف.');
                 return;
             }
             if (selectedService === 'delivery' && !address) {
-                alert('يرجى كتابة عنوان التوصيل.');
+                alert('يرجى إدخال عنوان التوصيل بالتفصيل.');
                 return;
             }
 
-            let orderDetails = `*🛍️ طلب جديد من متجر كراتشي*\n`;
+            let orderDetails = `*🛍️ طلب جديد من ${shopName}*\n`;
             orderDetails += `---------------------------------\n`;
             orderDetails += `*👤 العميل:* ${name}\n`;
             orderDetails += `*📞 الهاتف:* ${phone}\n`;
             orderDetails += `*📦 نوع الخدمة:* ${selectedService === 'delivery' ? '🛵 توصيل' : '🛍️ تجهيز واستلام من المحل'}\n`;
-            
-            if (selectedService === 'delivery') {
-                orderDetails += `*📍 المنطقة / العنوان:* ${address}\n`;
-            }
-            
+            if (selectedService === 'delivery') orderDetails += `*📍 العنوان:* ${address}\n`;
             orderDetails += `*💳 طريقة الدفع:* ${payment}\n`;
-            orderDetails += `---------------------------------\n`;
-            orderDetails += `*📋 الأصناف المطلوبة:*\n`;
+            orderDetails += `---------------------------------\n*📋 الأصناف المطلوبة:*\n`;
 
             let total = 0;
-            for (let id in cart) {
-                const prod = products.find(p => p.id == id);
-                const sub = prod.price * cart[id];
-                total += sub;
-                orderDetails += `- ${prod.name} (${cart[id]} قطعة) = ${sub.toFixed(2)} د.ل\n`;
-            }
+            cart.forEach(item => {
+                total += item.totalPrice;
+                orderDetails += `- ${item.name} (${item.detail}) = ${item.totalPrice.toFixed(2)} د.ل\n`;
+            });
 
-            orderDetails += `---------------------------------\n`;
-            orderDetails += `*💰 إجمالي الفاتورة:* ${total.toFixed(2)} د.ل\n`;
-
-            const encoded = encodeURI(orderDetails);
-            window.open(`https://wa.me/${STORE_PHONE}?text=${encoded}`, '_blank');
+            orderDetails += `---------------------------------\n*💰 إجمالي الفاتورة:* ${total.toFixed(2)} د.ل\n`;
+            window.open(`https://wa.me/${STORE_PHONE}?text=${encodeURI(orderDetails)}`, '_blank');
         }
 
-        // تشغيل أولي
-        renderProducts();
+        // ------------------ لوحة تحكم الإدارة (ADMIN ENGINE) ------------------ //
+
+        function openAdminLogin() {
+            document.getElementById('adminUserLogin').value = '';
+            document.getElementById('adminPassLogin').value = '';
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function checkAdminLogin() {
+            const u = document.getElementById('adminUserLogin').value.trim();
+            const p = document.getElementById('adminPassLogin').value.trim();
+
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                closeModal('loginModal');
+                openAdminDashboard();
+            } else {
+                alert('❌ اسم المستخدم أو رمز المرور غير صحيح!');
+            }
+        }
+
+        function openAdminDashboard() {
+            document.getElementById('adminUserEdit').value = ADMIN_USER;
+            document.getElementById('adminPassEdit').value = ADMIN_PASS;
+            document.getElementById('adminShopName').value = shopName;
+            document.getElementById('adminShopTagline').value = shopTagline;
+            document.getElementById('adminShopHours').value = shopHours;
+            document.getElementById('adminShopDelivery').value = shopDelivery;
+            document.getElementById('adminShopPhone').value = STORE_PHONE;
+            renderAdminProducts();
+            document.getElementById('adminDashboardModal').style.display = 'flex';
+        }
+
+        function saveAdminAuth() {
+            const u = document.getElementById('adminUserEdit').value.trim();
+            const p = document.getElementById('adminPassEdit').value.trim();
+            if (!u || !p) {
+                alert('لا يمكن ترك اسم المستخدم أو كلمة المرور فارغة.');
+                return;
+            }
+            ADMIN_USER = u;
+            ADMIN_PASS = p;
+            localStorage.setItem('karachi_admin_user_final', ADMIN_USER);
+            localStorage.setItem('karachi_admin_pass_final', ADMIN_PASS);
+            alert('✅ تم تحديث بيانات تسجيل دخول المدير بنجاح!');
+        }
+
+        function saveGeneralSettings() {
+            shopName = document.getElementById('adminShopName').value.trim() || shopName;
+            shopTagline = document.getElementById('adminShopTagline').value.trim() || shopTagline;
+            shopHours = document.getElementById('adminShopHours').value.trim() || shopHours;
+            shopDelivery = document.getElementById('adminShopDelivery').value.trim() || shopDelivery;
+            STORE_PHONE = document.getElementById('adminShopPhone').value.trim() || STORE_PHONE;
+
+            localStorage.setItem('karachi_name_final', shopName);
+            localStorage.setItem('karachi_tagline_final', shopTagline);
+            localStorage.setItem('karachi_hours_final', shopHours);
+            localStorage.setItem('karachi_delivery_final', shopDelivery);
+            localStorage.setItem('karachi_phone_final', STORE_PHONE);
+
+            document.getElementById('dispShopName').innerText = shopName;
+            document.getElementById('dispShopTagline').innerText = shopTagline;
+            document.getElementById('dispShopHours').innerText = shopHours;
+            document.getElementById('dispShopDelivery').innerText = shopDelivery;
+
+            alert('✅ تم حفظ كافة معلومات المتجر بنجاح!');
+        }
+
+        function toggleNewProdUnitLabel() {
+            const unit = document.getElementById('newProdUnit').value;
+            document.getElementById('lblNewProdPrice').innerText = (unit === 'weight') ? 'السعر لكل 1 كجم (د.ل):' : 'السعر للقطعة الواحدة (د.ل):';
+        }
+
+        function renderAdminProducts() {
+            const list = document.getElementById('adminProductsList');
+            list.innerHTML = '';
+
+            products.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'admin-item-card';
+
+                item.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <input type="text" id="edit_name_${p.id}" value="${p.name}" class="form-control" style="font-weight:bold; width:60%; padding:6px;">
+                        <button style="background:var(--danger); color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:0.8rem;" onclick="deleteProduct(${p.id})">🗑️ حذف الصنف</button>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:0.75rem; color:#94a3b8;">السعر (د.ل):</label>
+                            <input type="number" step="0.5" id="edit_price_${p.id}" value="${p.price}" class="form-control" style="padding:6px;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem; color:#94a3b8;">طريقة البيع:</label>
+                            <select id="edit_unit_${p.id}" class="form-control" style="padding:6px;">
+                                <option value="weight" ${p.unit === 'weight' ? 'selected' : ''}>بالميزان (كجم)</option>
+                                <option value="piece" ${p.unit === 'piece' ? 'selected' : ''}>بالقطعة</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:0.75rem; color:#94a3b8;">القسم:</label>
+                            <select id="edit_cat_${p.id}" class="form-control" style="padding:6px;">
+                                <option value="spices" ${p.cat === 'spices' ? 'selected' : ''}>بهارات</option>
+                                <option value="herbs" ${p.cat === 'herbs' ? 'selected' : ''}>أعشاب</option>
+                                <option value="nuts" ${p.cat === 'nuts' ? 'selected' : ''}>مكسرات</option>
+                                <option value="canned" ${p.cat === 'canned' ? 'selected' : ''}>معلبات وزيوت</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem; color:#94a3b8;">حالة الصنف:</label>
+                            <select id="edit_avail_${p.id}" class="form-control" style="padding:6px;">
+                                <option value="true" ${p.available !== false ? 'selected' : ''}>متوفر للطلب</option>
+                                <option value="false" ${p.available === false ? 'selected' : ''}>غير متوفر (معطل)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:8px;">
+                        <label style="font-size:0.75rem; color:#94a3b8;">تغيير الصورة:</label>
+                        <input type="file" id="edit_img_${p.id}" class="form-control" style="padding:4px; font-size:0.75rem;" accept="image/*">
+                    </div>
+
+                    <button class="btn-submit" style="background:#22c55e; color:#000; padding:6px; font-size:0.85rem;" onclick="saveProductEdits(${p.id})">💾 حفظ تعديلات هذا الصنف</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function saveProductEdits(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+
+            const name = document.getElementById(`edit_name_${id}`).value.trim();
+            const price = parseFloat(document.getElementById(`edit_price_${id}`).value);
+            const unit = document.getElementById(`edit_unit_${id}`).value;
+            const cat = document.getElementById(`edit_cat_${id}`).value;
+            const available = (document.getElementById(`edit_avail_${id}`).value === 'true');
+            const fileInput = document.getElementById(`edit_img_${id}`);
+
+            if (!name || isNaN(price) || price <= 0) {
+                alert('يرجى التأكد من كتابة الاسم والسعر بشكل صحيح.');
+                return;
+            }
+
+            p.name = name;
+            p.price = price;
+            p.unit = unit;
+            p.cat = cat;
+            p.available = available;
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    p.img = e.target.result;
+                    p.icon = '';
+                    persistProducts(false);
+                    alert(`✅ تم حفظ تعديلات (${p.name}) وتحديث الصورة بنجاح!`);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                persistProducts(false);
+                alert(`✅ تم حفظ كافة تعديلات (${p.name}) بنجاح!`);
+            }
+        }
+
+        function addNewProduct() {
+            const name = document.getElementById('newProdName').value.trim();
+            const price = parseFloat(document.getElementById('newProdPrice').value);
+            const cat = document.getElementById('newProdCat').value;
+            const unit = document.getElementById('newProdUnit').value;
+            const fileInput = document.getElementById('newProdImg');
+
+            if (!name || isNaN(price) || price <= 0) {
+                alert('يرجى إدخال اسم وسعر الصنف بشكل صحيح.');
+                return;
+            }
+
+            const newId = Date.now();
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const newProd = { id: newId, name, price, unit, cat, available: true, img: e.target.result, icon: '' };
+                    products.unshift(newProd);
+                    persistProducts(true);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                const newProd = { id: newId, name, price, unit, cat, available: true, img: '', icon: '📦' };
+                products.unshift(newProd);
+                persistProducts(true);
+            }
+        }
+
+        function deleteProduct(id) {
+            if (confirm('هل أنت متأكد تماماً من حذف هذا الصنف من المتجر؟')) {
+                products = products.filter(p => p.id !== id);
+                persistProducts(true);
+            }
+        }
+
+        function persistProducts(showAlert = false) {
+            localStorage.setItem('karachi_products_final', JSON.stringify(products));
+            renderProducts();
+            renderAdminProducts();
+            if (showAlert) {
+                alert('✅ تم تحديث قائمة الأصناف بنجاح!');
+                document.getElementById('newProdName').value = '';
+                document.getElementById('newProdPrice').value = '';
+                document.getElementById('newProdImg').value = '';
+            }
+        }
+
+        initApp();
     </script>
 </body>
 </html>
