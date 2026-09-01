@@ -58,7 +58,6 @@
       padding-bottom: 90px;
     }
 
-    /* Top Announcement Bar */
     .announcement-bar {
       background: linear-gradient(90deg, #b45309, #d97706);
       color: #ffffff;
@@ -72,7 +71,6 @@
       gap: 8px;
     }
 
-    /* Header */
     header {
       background: var(--card-bg);
       border-bottom: 1px solid var(--border);
@@ -145,31 +143,15 @@
       color: white;
     }
 
-    /* Store Status Alert */
-    .status-alert {
-      background: #fef2f2;
-      border-right: 4px solid var(--danger);
-      color: #991b1b;
-      padding: 10px 16px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-align: center;
-      margin: 10px auto;
-      max-width: 1200px;
-      border-radius: 8px;
-    }
-
-    /* Container */
     .container {
       max-width: 1200px;
       margin: auto;
       padding: 16px;
     }
 
-    /* Search & Sort Section */
     .search-sort-bar {
       display: grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: 1fr auto;
       gap: 10px;
       margin-bottom: 16px;
     }
@@ -205,7 +187,6 @@
       cursor: pointer;
     }
 
-    /* Category Navigation */
     .cat-nav {
       display: flex;
       gap: 10px;
@@ -235,7 +216,6 @@
       border-color: var(--primary);
     }
 
-    /* Product Grid */
     .products-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -294,22 +274,6 @@
       justify-content: center;
       font-size: 0.9rem;
     }
-    .card-share-btn {
-      position: absolute;
-      top: 48px;
-      left: 10px;
-      background: rgba(255, 255, 255, 0.85);
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      color: var(--text-main);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-    }
     .product-body {
       padding: 14px;
       display: flex;
@@ -361,7 +325,6 @@
       background: var(--primary-hover);
     }
 
-    /* Modal Styling */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -380,7 +343,7 @@
       background: var(--card-bg);
       border-radius: 18px;
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       max-height: 90vh;
       overflow-y: auto;
       padding: 20px;
@@ -401,7 +364,6 @@
       color: var(--text-main);
     }
 
-    /* Scale / Weight Dialog */
     .scale-toggle {
       display: flex;
       background: var(--bg);
@@ -506,7 +468,6 @@
       outline: none;
     }
 
-    /* Bottom Fixed Nav / Cart */
     .bottom-bar {
       position: fixed;
       bottom: 0;
@@ -556,7 +517,6 @@
       gap: 8px;
     }
 
-    /* Cart Modal Details */
     .free-delivery-bar {
       background: var(--bg);
       border: 1px solid var(--border);
@@ -580,7 +540,7 @@
       transition: width 0.3s;
     }
     .cart-items-list {
-      max-height: 220px;
+      max-height: 200px;
       overflow-y: auto;
       margin-bottom: 14px;
     }
@@ -619,7 +579,6 @@
       outline: none;
     }
 
-    /* Admin Panel Specifics */
     .admin-container {
       max-width: 1100px;
       margin: 20px auto;
@@ -662,7 +621,6 @@
       color: var(--primary);
     }
 
-    /* Footer */
     footer {
       background: var(--card-bg);
       border-top: 1px solid var(--border);
@@ -694,11 +652,6 @@
     <span id="announcementText">مرحباً بكم في متجر كراتشي - أجود التوابل والبهارات الطازجة</span>
   </div>
 
-  <!-- Store Closed Banner -->
-  <div id="storeClosedBanner" class="status-alert" style="display: none;">
-    ⚠️ المتجر مغلق حالياً لاستراحة العمل. يمكنك تصفح المنتجات وإعداد سلتك بحرية!
-  </div>
-
   <!-- Header -->
   <header>
     <div class="header-container">
@@ -712,15 +665,12 @@
       <div class="header-actions">
         <button class="icon-btn" onclick="toggleDarkMode()" title="الوضع الليلي"><i class="fa-solid fa-moon"></i></button>
         <button class="icon-btn" onclick="openFavoritesModal()" title="المفضلة"><i class="fa-solid fa-heart"></i></button>
-        <button class="icon-btn" id="reorderBtn" onclick="triggerReorder()" title="تكرار الطلب السابق" style="display: none;"><i class="fa-solid fa-rotate-left"></i></button>
       </div>
     </div>
   </header>
 
   <!-- Main Store Front -->
   <main id="storeView" class="container">
-    
-    <!-- Search & Filters -->
     <div class="search-sort-bar">
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="ابحث عن بهار، خلطة، أو مكسرات..." oninput="renderStoreProducts()" />
@@ -728,8 +678,8 @@
       </div>
       <select id="sortSelect" class="select-custom" onchange="renderStoreProducts()">
         <option value="default">الترتيب الافتراضي</option>
-        <option value="price-asc">السعر: من الأقل للأعلى</option>
-        <option value="price-desc">السعر: من الأعلى للأقل</option>
+        <option value="price-asc">السعر: الأقل للأعلى</option>
+        <option value="price-desc">السعر: الأعلى للأقل</option>
         <option value="newest">الأحدث إضافة</option>
       </select>
     </div>
@@ -739,7 +689,6 @@
 
     <!-- Products Grid -->
     <div class="products-grid" id="productsGrid"></div>
-
   </main>
 
   <!-- Admin Panel View -->
@@ -770,6 +719,7 @@
       <button class="btn-scale" style="width: auto; padding: 8px 16px;" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> إضافة صنف جديد</button>
       <button class="btn-scale" style="width: auto; padding: 8px 16px; background: #475569;" onclick="openCategoryManager()"><i class="fa-solid fa-tags"></i> إدارة الأقسام</button>
       <button class="btn-scale" style="width: auto; padding: 8px 16px; background: #0284c7;" onclick="openStoreSettings()"><i class="fa-solid fa-gear"></i> إعدادات المتجر والفروع</button>
+      <button class="btn-scale" style="width: auto; padding: 8px 16px; background: #16a34a;" onclick="openBulkPriceModal()"><i class="fa-solid fa-tags"></i> تعديل الأسعار الجماعي</button>
     </div>
 
     <!-- Admin Products List -->
@@ -780,8 +730,8 @@
           <th>اسم الصنف</th>
           <th>القسم</th>
           <th>سعر الكيلو</th>
-          <th>خيارات الطحن</th>
           <th>الحالة</th>
+          <th>الترتيب</th>
           <th>إجراءات</th>
         </tr>
       </thead>
@@ -805,10 +755,10 @@
     </div>
   </div>
 
-  <!-- Product Scale Modal (Weight / Cash Mode) -->
+  <!-- Modal: Product Scale Modal -->
   <div class="modal-overlay" id="scaleModal">
     <div class="modal-card">
-      <button class="modal-close" onclick="closeScaleModal()"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" onclick="closeModal('scaleModal')"><i class="fa-solid fa-xmark"></i></button>
       <h3 id="scaleItemTitle" style="font-weight: 900; margin-bottom: 4px;"></h3>
       <p id="scaleItemSubtitle" style="font-size: 0.8rem; color: var(--text-muted);"></p>
 
@@ -817,7 +767,6 @@
         <button id="toggleCashMode" onclick="setScaleMode('cash')">بالمبلغ (دينار)</button>
       </div>
 
-      <!-- Quick Weight Selectors -->
       <div id="weightQuickBadges" class="quick-badges">
         <span class="badge-chip" onclick="setExactWeight(50)">50 جم</span>
         <span class="badge-chip" onclick="setExactWeight(100)">100 جم</span>
@@ -826,7 +775,6 @@
         <span class="badge-chip" onclick="setExactWeight(1000)">1 كيلو</span>
       </div>
 
-      <!-- Quick Cash Selectors -->
       <div id="cashQuickBadges" class="quick-badges" style="display: none;">
         <span class="badge-chip" onclick="setExactCash(5)">5 د.ل</span>
         <span class="badge-chip" onclick="setExactCash(10)">10 د.ل</span>
@@ -834,55 +782,43 @@
         <span class="badge-chip" onclick="setExactCash(50)">50 د.ل</span>
       </div>
 
-      <!-- Interactive Stepper -->
       <div class="stepper-box">
         <button class="btn-step" onclick="stepScale(-1)">-</button>
         <div class="val-display" id="scaleDisplayVal">50 جم</div>
         <button class="btn-step" onclick="stepScale(1)">+</button>
       </div>
-      <div style="text-align: center; font-size: 0.9rem; font-weight: 800; color: var(--success);" id="scaleCalculatedPrice">
-        السعر المقدر: 0.00 د.ل
-      </div>
+      <div style="text-align: center; font-size: 0.9rem; font-weight: 800; color: var(--success);" id="scaleCalculatedPrice">السعر المقدر: 0.00 د.ل</div>
 
-      <!-- Grind Preparation State -->
       <div class="grind-options" id="grindOptionsBox">
         <div class="grind-title">حالة التجهيز والطحن:</div>
         <div class="grind-selector" id="grindBtnContainer"></div>
       </div>
 
-      <!-- Recipe Tips (If Any) -->
       <div id="cookingTipBox" style="background: var(--primary-light); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; margin: 10px 0; display: none;">
         💡 <strong>نصيحة الاستخدام:</strong> <span id="cookingTipText"></span>
       </div>
 
-      <!-- Item Custom Note -->
       <input type="text" id="scaleItemNote" class="item-note-input" placeholder="ملاحظة خاصة بالصنف (مثلاً: تنقية، قسم الكيس نصفين...)" />
-
-      <button class="btn-scale" style="margin-top: 16px;" onclick="addScaleItemToCart()">
-        <i class="fa-solid fa-cart-plus"></i> إضافة إلى السلة
-      </button>
+      <button class="btn-scale" style="margin-top: 16px;" onclick="addScaleItemToCart()"><i class="fa-solid fa-cart-plus"></i> إضافة إلى السلة</button>
     </div>
   </div>
 
-  <!-- Cart Checkout Modal -->
+  <!-- Modal: Cart & Checkout -->
   <div class="modal-overlay" id="cartModal">
     <div class="modal-card">
-      <button class="modal-close" onclick="closeCartModal()"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" onclick="closeModal('cartModal')"><i class="fa-solid fa-xmark"></i></button>
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <h3 style="font-weight: 900;"><i class="fa-solid fa-bag-shopping"></i> سلة المشتريات</h3>
         <button onclick="clearCartConfirm()" style="background: none; border: none; color: var(--danger); font-size: 0.8rem; font-weight: 700; cursor: pointer;">تفريغ السلة</button>
       </div>
 
-      <!-- Free Delivery Progress Tracker -->
       <div class="free-delivery-bar" id="freeDeliveryTracker">
         <div id="freeDeliveryMsg">أضف 0 د.ل إضافية للحصول على توصيل مجاني! 🚚</div>
         <div class="progress-track"><div class="progress-fill" id="deliveryProgressFill"></div></div>
       </div>
 
-      <!-- Cart List -->
       <div class="cart-items-list" id="cartItemsList"></div>
 
-      <!-- Order Options Form -->
       <div style="margin-top: 16px;">
         <div class="order-option-group">
           <label>طريقة الاستلام:</label>
@@ -892,7 +828,6 @@
           </div>
         </div>
 
-        <!-- Branches Select (Pickup Mode) -->
         <div id="pickupBranchSection" class="order-option-group" style="display: none;">
           <label>اختر فرع الاستلام:</label>
           <select id="pickupBranchSelect" class="order-input" onchange="renderBranchInfo()">
@@ -902,11 +837,18 @@
           <div id="branchDetailsBox" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;"></div>
         </div>
 
-        <!-- Address & GPS (Delivery Mode) -->
         <div id="deliveryAddressSection">
           <div class="order-option-group">
             <label>عنوان التوصيل والشارع:</label>
             <input type="text" id="orderAddress" class="order-input" placeholder="المدينة، اسم المنطقة، أقرب نقطة دالة..." />
+          </div>
+          <div class="order-option-group">
+            <label>توقيت التوصيل المفضل:</label>
+            <select id="deliveryTimeSlot" class="order-input">
+              <option value="في أي وقت (أسرع وقت متاح)">الاستلام في أي وقت (أسرع وقت متاح)</option>
+              <option value="الفترة الصباحية (10:00 ص - 2:00 م)">الفترة الصباحية (10:00 ص - 2:00 م)</option>
+              <option value="الفترة المسائية (5:00 م - 9:00 م)">الفترة المسائية (5:00 م - 9:00 م)</option>
+            </select>
           </div>
           <button type="button" class="btn-scale" style="background: #0284c7; padding: 6px; font-size: 0.82rem; margin-bottom: 12px;" onclick="fetchCurrentGPS()">
             📍 مشاركة موقعي الحالي عبر الـ GPS
@@ -927,15 +869,14 @@
         <div class="order-option-group">
           <label>طريقة الدفع:</label>
           <select id="paymentMethodSelect" class="order-input" onchange="renderPaymentDetails()">
-            <option value="cash">الدفع عند الاستلام (كاش)</option>
-            <option value="card">بطاقة مصرفية / تداول / إدفع لي</option>
-            <option value="transfer">تحويل مصرفي مسبق</option>
+            <option value="الدفع عند الاستلام (كاش)">الدفع عند الاستلام (كاش)</option>
+            <option value="بطاقة مصرفية / تداول / إدفع لي">بطاقة مصرفية / تداول / إدفع لي</option>
+            <option value="تحويل مصرفي مسبق">تحويل مصرفي مسبق</option>
           </select>
           <div id="bankDetailsInfo" style="display: none; background: var(--bg); padding: 8px; border-radius: 8px; font-size: 0.8rem; margin-top: 6px;"></div>
         </div>
       </div>
 
-      <!-- Action Buttons -->
       <div style="display: flex; gap: 8px; margin-top: 16px;">
         <button class="btn-scale" style="background: var(--success); flex: 2;" onclick="sendWhatsAppOrder()">
           <i class="fa-brands fa-whatsapp"></i> إرسال الطلب عبر واتساب
@@ -944,6 +885,166 @@
           <i class="fa-solid fa-file-pdf"></i> حفظ الفاتورة
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add / Edit Product (Admin) -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('productModal')"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="font-weight: 900; margin-bottom: 14px;" id="productModalTitle">إضافة / تعديل الصنف</h3>
+      <input type="hidden" id="adminEditProdId" />
+      
+      <div class="order-option-group">
+        <label>اسم الصنف:</label>
+        <input type="text" id="adminProdName" class="order-input" placeholder="مثال: فلفل أسود فاخر" />
+      </div>
+
+      <div class="order-option-group">
+        <label>القسم / التصنيف:</label>
+        <select id="adminProdCat" class="order-input"></select>
+      </div>
+
+      <div class="order-option-group">
+        <label>سعر الكيلو (د.ل):</label>
+        <input type="number" step="0.5" id="adminProdPrice" class="order-input" placeholder="مثال: 50.00" />
+      </div>
+
+      <div class="order-option-group">
+        <label>تعديل صورة الصنف:</label>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <input type="file" id="adminProdFileInput" accept="image/*" class="order-input" onchange="handleImageUpload(event)" />
+          <input type="text" id="adminProdImg" class="order-input" placeholder="أو الصق رابط الصورة هنا (URL)..." onchange="previewSelectedImg(this.value)" />
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <img id="adminProdImgPreview" src="" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); display: none;" />
+            <span id="imgPreviewText" style="font-size: 0.75rem; color: var(--text-muted);">معاينة الصورة</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-option-group">
+        <label>نصيحة الاستخدام أو مكونات البكج:</label>
+        <textarea id="adminProdTip" class="order-input" style="height: 60px;" placeholder="نصيحة للزبون أو محتويات العرض..."></textarea>
+      </div>
+
+      <div class="order-option-group">
+        <label>خيارات الطحن المتاحة:</label>
+        <div style="display: flex; gap: 10px; font-size: 0.85rem;">
+          <label><input type="checkbox" id="grindGrain" checked> حب</label>
+          <label><input type="checkbox" id="grindFine" checked> ناعم</label>
+          <label><input type="checkbox" id="grindCrushed" checked> مجروش</label>
+        </div>
+      </div>
+
+      <div class="order-option-group" style="display: flex; gap: 14px; margin-top: 10px;">
+        <label><input type="checkbox" id="adminProdInStock" checked> متوفر في المتجر</label>
+        <label><input type="checkbox" id="adminProdLowStock"> شارة قرب نفاد الكمية</label>
+      </div>
+
+      <button class="btn-scale" style="margin-top: 14px;" onclick="saveProductAdmin()">حفظ التعديلات بالكامل</button>
+    </div>
+  </div>
+
+  <!-- Modal: Bulk Price Adjustment -->
+  <div class="modal-overlay" id="bulkPriceModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('bulkPriceModal')"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="font-weight: 900; margin-bottom: 14px;">تعديل الأسعار الجماعي</h3>
+      
+      <div class="order-option-group">
+        <label>اختر القسم لتطبيق التعديل:</label>
+        <select id="bulkCategorySelect" class="order-input"></select>
+      </div>
+
+      <div class="order-option-group">
+        <label>نوع التعديل:</label>
+        <select id="bulkTypeSelect" class="order-input">
+          <option value="percent">نسبة مئوية (%)</option>
+          <option value="fixed">مبلغ ثابت (د.ل)</option>
+        </select>
+      </div>
+
+      <div class="order-option-group">
+        <label>قيمة الزيادة أو التخفيض (استخدم - للتخفيض):</label>
+        <input type="number" step="0.5" id="bulkValueInput" class="order-input" placeholder="مثال: 5 أو -10" />
+      </div>
+
+      <button class="btn-scale" style="margin-top: 14px;" onclick="applyBulkPriceAdjustment()">تطبيق التعديل الجماعي</button>
+    </div>
+  </div>
+
+  <!-- Modal: Category Manager (Admin) -->
+  <div class="modal-overlay" id="categoryModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('categoryModal')"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="font-weight: 900; margin-bottom: 14px;">إدارة الأقسام والتصنيفات</h3>
+      
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <input type="text" id="newCatName" class="order-input" placeholder="اسم القسم الجديد..." />
+        <button class="btn-scale" style="width: auto; padding: 0 16px;" onclick="addNewCategory()">إضافة</button>
+      </div>
+
+      <div id="adminCatListContainer" style="max-height: 250px; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Store Settings (Admin) -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('settingsModal')"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="font-weight: 900; margin-bottom: 14px;">إعدادات المتجر والفروع</h3>
+
+      <div class="order-option-group">
+        <label>رقم هاتف الواتساب المعتمد (بالمفتاح الدولي بدون +):</label>
+        <input type="text" id="setWhatsapp" class="order-input" placeholder="مثال: 21891XXXXXXX" />
+      </div>
+
+      <div class="order-option-group">
+        <label>رمز الدخول للوحة الإدارة:</label>
+        <input type="text" id="setAdminPass" class="order-input" />
+      </div>
+
+      <div class="order-option-group">
+        <label>الشريط الإعلاني العلوي:</label>
+        <input type="text" id="setAnnouncement" class="order-input" />
+      </div>
+
+      <div class="order-option-group">
+        <label>الحد الأدنى لطلب التوصيل (د.ل):</label>
+        <input type="number" id="setMinOrder" class="order-input" />
+      </div>
+
+      <div class="order-option-group">
+        <label>قيمة التوصيل المجاني (د.ل):</label>
+        <input type="number" id="setFreeDelivery" class="order-input" />
+      </div>
+
+      <div class="order-option-group">
+        <label>مواعيد فرع قرقارش:</label>
+        <input type="text" id="setGargareschHours" class="order-input" />
+      </div>
+
+      <div class="order-option-group">
+        <label>رابط Google Maps لفرع قرقارش:</label>
+        <input type="text" id="setGargareschMap" class="order-input" />
+      </div>
+
+      <div class="order-option-group">
+        <label>مواعيد فرع أبو ستة:</label>
+        <input type="text" id="setAbusettaHours" class="order-input" />
+      </div>
+
+      <div class="order-option-group">
+        <label>رابط Google Maps لفرع أبو ستة:</label>
+        <input type="text" id="setAbusettaMap" class="order-input" />
+      </div>
+
+      <div class="order-option-group">
+        <label>بيانات الحساب المصرفي (للتحويل):</label>
+        <textarea id="setBankDetails" class="order-input" style="height: 60px;"></textarea>
+      </div>
+
+      <button class="btn-scale" style="margin-top: 14px;" onclick="saveStoreSettings()">حفظ الإعدادات بالكامل</button>
     </div>
   </div>
 
@@ -960,9 +1061,8 @@
     </div>
   </footer>
 
-  <!-- Core App Logic & State Script -->
+  <!-- Core Script Engine -->
   <script>
-    /* Default Initial Schema */
     const DEFAULT_STORE_CONFIG = {
       storeName: "كراتشي - عالم التوابل والبهارات",
       adminPass: "123456",
@@ -974,7 +1074,7 @@
         gargaresch: { name: "فرع قرقارش", hours: "10:00 ص - 10:00 م", mapUrl: "https://maps.google.com" },
         abusetta: { name: "فرع أبو ستة", hours: "09:30 ص - 09:30 م", mapUrl: "https://maps.google.com" }
       },
-      bankDetails: "مصرف الأمان | حساب رقم: 0000-1111-2222-3333 | باسم: متجر كراتشي للتوابل",
+      bankDetails: "مصرف الأمان | حساب رقم: 0000-1111-2222-3333 | باسم: متجر كراتشي للتوابل والبهارات",
       social: {
         facebook: "https://facebook.com",
         instagram: "https://instagram.com",
@@ -1055,7 +1155,6 @@
       }
     ];
 
-    /* Dynamic Application State */
     let storeConfig = JSON.parse(localStorage.getItem('karachi_config')) || DEFAULT_STORE_CONFIG;
     let categories = JSON.parse(localStorage.getItem('karachi_cats')) || DEFAULT_CATEGORIES;
     let products = JSON.parse(localStorage.getItem('karachi_prods')) || DEFAULT_PRODUCTS;
@@ -1064,20 +1163,26 @@
 
     let activeCategory = "all";
     let activeScaleProduct = null;
-    let scaleMode = "weight"; // 'weight' | 'cash'
-    let currentScaleWeight = 50; // grams
-    let currentScaleCash = 5; // LYD
+    let scaleMode = "weight";
+    let currentScaleWeight = 50;
+    let currentScaleCash = 5;
     let currentGrindSelection = "fine";
     let currentGPSLocation = "";
     let secretClickCount = 0;
 
-    /* Initialization */
     window.addEventListener('DOMContentLoaded', () => {
       checkAdminURL();
+      applyConfigUI();
       renderCategoryNav();
       renderStoreProducts();
       updateCartUI();
-      checkPreviousOrder();
+    });
+
+    window.addEventListener('beforeunload', (e) => {
+      if (cart.length > 0) {
+        e.preventDefault();
+        e.returnValue = 'لديك أصناف في السلة، هل تود مغادرة الصفحة؟';
+      }
     });
 
     function saveState() {
@@ -1088,12 +1193,22 @@
       localStorage.setItem('karachi_favs', JSON.stringify(favorites));
     }
 
-    /* UI Theme & Modes */
+    function applyConfigUI() {
+      document.getElementById('announcementText').innerText = storeConfig.announcement;
+      document.getElementById('linkFb').href = storeConfig.social.facebook;
+      document.getElementById('linkInsta').href = storeConfig.social.instagram;
+      document.getElementById('linkTiktok').href = storeConfig.social.tiktok;
+      document.getElementById('linkWa').href = `https://wa.me/${storeConfig.whatsappNumber}`;
+    }
+
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
     }
 
-    /* Category Navigation */
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
     function renderCategoryNav() {
       const container = document.getElementById('catNavList');
       container.innerHTML = '';
@@ -1110,7 +1225,6 @@
       });
     }
 
-    /* Store Products Render Engine */
     function renderStoreProducts() {
       const grid = document.getElementById('productsGrid');
       const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -1127,7 +1241,6 @@
       if (sortVal === 'newest') list.sort((a, b) => (b.dateAdded || 0) - (a.dateAdded || 0));
 
       grid.innerHTML = '';
-
       if (list.length === 0) {
         grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">لا توجد أصناف مطابقة للبحث حالياً.</div>`;
         return;
@@ -1145,9 +1258,6 @@
             ${item.lowStock ? '<span class="badge-stock">⚠️ قرب نفاد الكمية</span>' : ''}
             <button class="card-fav-btn" onclick="toggleFavorite('${item.id}')">
               <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-            </button>
-            <button class="card-share-btn" onclick="shareProductDirect('${item.id}')" title="مشاركة الصنف">
-              <i class="fa-solid fa-share-nodes"></i>
             </button>
           </div>
           <div class="product-body">
@@ -1170,7 +1280,6 @@
       });
     }
 
-    /* Scale / Weight Modal Logic */
     function openScaleModal(prodId) {
       activeScaleProduct = products.find(p => p.id === prodId);
       if (!activeScaleProduct) return;
@@ -1186,7 +1295,6 @@
         tipBox.style.display = 'none';
       }
 
-      // Render Grind Buttons
       const grindContainer = document.getElementById('grindBtnContainer');
       const grindBox = document.getElementById('grindOptionsBox');
       grindContainer.innerHTML = '';
@@ -1215,10 +1323,6 @@
       setExactWeight(100);
       document.getElementById('scaleItemNote').value = '';
       document.getElementById('scaleModal').style.display = 'flex';
-    }
-
-    function closeScaleModal() {
-      document.getElementById('scaleModal').style.display = 'none';
     }
 
     function setScaleMode(mode) {
@@ -1288,19 +1392,16 @@
 
       saveState();
       updateCartUI();
-      closeScaleModal();
+      closeModal('scaleModal');
     }
 
-    /* Cart UI Management */
     function updateCartUI() {
       const badge = document.getElementById('cartBadge');
       const totalSum = document.getElementById('cartTotalSum');
-      
       const total = cart.reduce((sum, item) => sum + item.price, 0);
       badge.innerText = cart.length;
       totalSum.innerText = `${total.toFixed(2)} د.ل`;
 
-      // Free Delivery Progress
       const fill = document.getElementById('deliveryProgressFill');
       const msg = document.getElementById('freeDeliveryMsg');
       const limit = storeConfig.freeDeliveryLimit || 100;
@@ -1323,14 +1424,9 @@
       document.getElementById('cartModal').style.display = 'flex';
     }
 
-    function closeCartModal() {
-      document.getElementById('cartModal').style.display = 'none';
-    }
-
     function renderCartItems() {
       const container = document.getElementById('cartItemsList');
       container.innerHTML = '';
-
       if (cart.length === 0) {
         container.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-muted);">سلة المشتريات فارغة.</div>`;
         return;
@@ -1390,7 +1486,7 @@
     function renderPaymentDetails() {
       const method = document.getElementById('paymentMethodSelect').value;
       const box = document.getElementById('bankDetailsInfo');
-      if (method === 'transfer') {
+      if (method === 'تحويل مصرفي مسبق') {
         box.style.display = 'block';
         box.innerHTML = `<strong>بيانات التحويل المصرفي:</strong><br>${storeConfig.bankDetails}`;
       } else {
@@ -1416,40 +1512,29 @@
       }
     }
 
-    /* WhatsApp Order Dispatcher */
     function sendWhatsAppOrder() {
-      if (cart.length === 0) {
-        alert("سلة المشتريات فارغة!");
-        return;
-      }
-
+      if (cart.length === 0) return alert("سلة المشتريات فارغة!");
       const total = cart.reduce((sum, item) => sum + item.price, 0);
       const phone = document.getElementById('orderPhone').value.trim();
       const phoneAlt = document.getElementById('orderPhoneAlt').value.trim();
 
-      if (!phone) {
-        alert("يرجى إدخال رقم الهاتف الأساسي للتواصل.");
-        return;
-      }
-
+      if (!phone) return alert("يرجى إدخال رقم الهاتف الأساسي للتواصل.");
       if (orderMethod === 'delivery' && total < (storeConfig.minOrderDelivery || 20)) {
-        alert(`الحد الأدنى لخدمة التوصيل هو ${storeConfig.minOrderDelivery} د.ل`);
-        return;
+        return alert(`الحد الأدنى لخدمة التوصيل هو ${storeConfig.minOrderDelivery} د.ل`);
       }
 
-      let orderMsg = `*🛒 طلب جديد من متجر كراتشي*\n`;
-      orderMsg += `--------------------------------\n`;
+      let orderMsg = `*🛒 طلب جديد من متجر كراتشي - عالم التوابل والبهارات*\n--------------------------------\n`;
       cart.forEach((i, idx) => {
         orderMsg += `${idx + 1}. *${i.name}*\n   - الوزن: ${i.grams} جم\n   - التجهيز: ${i.grind}\n   - السعر: ${i.price.toFixed(2)} د.ل\n`;
         if (i.note) orderMsg += `   - ملاحظة: ${i.note}\n`;
       });
-      orderMsg += `--------------------------------\n`;
-      orderMsg += `*💰 الإجمالي:* ${total.toFixed(2)} د.ل\n`;
-      orderMsg += `*طريقة الاستلام:* ${orderMethod === 'delivery' ? '🛵 توصيل' : '🛍️ استلام من الفرع'}\n`;
+      orderMsg += `--------------------------------\n*💰 الإجمالي:* ${total.toFixed(2)} د.ل\n*طريقة الاستلام:* ${orderMethod === 'delivery' ? '🛵 توصيل للعنوان' : '🛍️ استلام من الفرع'}\n`;
 
       if (orderMethod === 'delivery') {
         const addr = document.getElementById('orderAddress').value.trim();
+        const timeSlot = document.getElementById('deliveryTimeSlot').value;
         orderMsg += `*📍 العنوان:* ${addr || 'غير محدد'}\n`;
+        orderMsg += `*⏰ التوقيت المفضل:* ${timeSlot}\n`;
         if (currentGPSLocation) orderMsg += `*🗺️ رابط GPS:* ${currentGPSLocation}\n`;
       } else {
         const branchKey = document.getElementById('pickupBranchSelect').value;
@@ -1460,25 +1545,20 @@
       if (phoneAlt) orderMsg += `*📞 هاتف بديل:* ${phoneAlt}\n`;
       orderMsg += `*💳 طريقة الدفع:* ${document.getElementById('paymentMethodSelect').value}\n`;
 
-      // Save for reorder
-      localStorage.setItem('karachi_last_order', JSON.stringify(cart));
-
       const encodedMsg = encodeURIComponent(orderMsg);
       window.open(`https://wa.me/${storeConfig.whatsappNumber}?text=${encodedMsg}`, '_blank');
     }
 
-    /* PDF Invoice Generator */
     function downloadReceiptPDF() {
       if (cart.length === 0) return alert("السلة فارغة!");
       const total = cart.reduce((sum, item) => sum + item.price, 0);
-
       const invoiceElement = document.createElement('div');
       invoiceElement.style.padding = '20px';
       invoiceElement.style.fontFamily = 'Tajawal, sans-serif';
       invoiceElement.style.direction = 'rtl';
       invoiceElement.innerHTML = `
         <h2 style="color: #c25e00; text-align: center;">كراتشي - عالم التوابل والبهارات</h2>
-        <p style="text-align: center; font-size: 0.85rem;">فاتورة طلبية</p>
+        <p style="text-align: center; font-size: 0.85rem;">فاتورة مشتريات</p>
         <hr style="margin: 10px 0;"/>
         <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
           <thead>
@@ -1502,11 +1582,9 @@
         </table>
         <h3 style="text-align: left; margin-top: 15px; color: #c25e00;">الإجمالي: ${total.toFixed(2)} د.ل</h3>
       `;
-
       html2pdf().from(invoiceElement).save(`Karachi_Invoice_${Date.now()}.pdf`);
     }
 
-    /* Favorites & Re-order */
     function toggleFavorite(id) {
       if (favorites.includes(id)) {
         favorites = favorites.filter(f => f !== id);
@@ -1517,42 +1595,46 @@
       renderStoreProducts();
     }
 
-    function shareProductDirect(id) {
-      const prod = products.find(p => p.id === id);
-      if (prod && navigator.share) {
-        navigator.share({
-          title: prod.name,
-          text: `شاهد ${prod.name} في متجر كراتشي للتوابل والبهارات`,
-          url: window.location.href
-        });
-      } else {
-        alert("تم نسخ رابط المتجر لمشاركته!");
-      }
+    function openFavoritesModal() {
+      const favProducts = products.filter(p => favorites.includes(p.id));
+      if (favProducts.length === 0) return alert("قائمة المفضلة فارغة حالياً ❤️");
+      document.getElementById('searchInput').value = '';
+      activeCategory = 'all';
+      renderCategoryNav();
+      
+      const grid = document.getElementById('productsGrid');
+      grid.innerHTML = '';
+      favProducts.forEach(item => {
+        const price100g = (item.priceKilo / 10).toFixed(2);
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <div class="product-img-box">
+            <img src="${item.img}" alt="${item.name}" />
+            <button class="card-fav-btn" onclick="toggleFavorite('${item.id}')"><i class="fa-solid fa-heart"></i></button>
+          </div>
+          <div class="product-body">
+            <div>
+              <div class="product-title">${item.name}</div>
+              <div class="product-desc">${item.tip || ''}</div>
+            </div>
+            <div>
+              <div class="price-box">
+                <div class="price-kilo">${item.priceKilo.toFixed(2)} د.ل</div>
+                <div class="price-100g">سعر 100 جم: ${price100g} د.ل</div>
+              </div>
+              <button class="btn-scale" onclick="openScaleModal('${item.id}')"><i class="fa-solid fa-scale-balanced"></i> تحديد الوزن</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
     }
 
-    function checkPreviousOrder() {
-      const lastOrder = localStorage.getItem('karachi_last_order');
-      if (lastOrder) {
-        document.getElementById('reorderBtn').style.display = 'flex';
-      }
-    }
-
-    function triggerReorder() {
-      const lastOrder = JSON.parse(localStorage.getItem('karachi_last_order'));
-      if (lastOrder && lastOrder.length > 0) {
-        cart = lastOrder;
-        saveState();
-        updateCartUI();
-        openCartModal();
-      }
-    }
-
-    /* Secret Admin Access Protocol */
+    /* Admin Management Core */
     function checkAdminURL() {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('admin') === '1') {
-        authenticateAdmin();
-      }
+      if (params.get('admin') === '1') authenticateAdmin();
     }
 
     function handleSecretAdminClick() {
@@ -1589,47 +1671,282 @@
     function renderAdminDashboard() {
       document.getElementById('statTotalItems').innerText = products.length;
       document.getElementById('statAvailableItems').innerText = products.filter(p => p.inStock).length;
-      document.getElementById('statCategories').innerText = categories.filter(c => c.active).length;
+      document.getElementById('statCategories').innerText = categories.filter(c => c.active && c.id !== 'all').length;
 
       const tbody = document.getElementById('adminProductsBody');
       tbody.innerHTML = '';
 
-      products.forEach(p => {
+      products.forEach((p, index) => {
         const cat = categories.find(c => c.id === p.categoryId)?.name || p.categoryId;
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><img src="${p.img}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;"/></td>
+          <td><img src="${p.img}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=100&auto=format&fit=crop&q=60'"/></td>
           <td style="font-weight: 800;">${p.name}</td>
           <td>${cat}</td>
           <td style="color: var(--primary); font-weight: 800;">${p.priceKilo.toFixed(2)} د.ل</td>
-          <td style="font-size: 0.75rem;">${p.grindTypes.join(', ')}</td>
           <td><span style="color: ${p.inStock ? 'var(--success)' : 'var(--danger)'}; font-weight: 700;">${p.inStock ? 'متوفر' : 'معطل'}</span></td>
           <td>
-            <button class="icon-btn" style="width: 32px; height: 32px; display: inline-flex;" onclick="editProductAdmin('${p.id}')"><i class="fa-solid fa-pen"></i></button>
-            <button class="icon-btn" style="width: 32px; height: 32px; display: inline-flex; color: var(--danger);" onclick="deleteProductAdmin('${p.id}')"><i class="fa-solid fa-trash"></i></button>
+            <button class="icon-btn" style="width: 28px; height: 28px; display: inline-flex;" onclick="moveProductOrder(${index}, -1)">⬆️</button>
+            <button class="icon-btn" style="width: 28px; height: 28px; display: inline-flex;" onclick="moveProductOrder(${index}, 1)">⬇️</button>
+          </td>
+          <td>
+            <button class="icon-btn" style="width: 32px; height: 32px; display: inline-flex;" title="تعديل شامل" onclick="openProductModal('${p.id}')"><i class="fa-solid fa-pen"></i></button>
+            <button class="icon-btn" style="width: 32px; height: 32px; display: inline-flex; color: var(--danger);" title="حذف" onclick="deleteProductAdmin('${p.id}')"><i class="fa-solid fa-trash"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function editProductAdmin(id) {
-      const p = products.find(prod => prod.id === id);
-      if (!p) return;
-      const newPrice = prompt(`تعديل سعر الكيلو لـ (${p.name}):`, p.priceKilo);
-      if (newPrice !== null && !isNaN(newPrice)) {
-        p.priceKilo = parseFloat(newPrice);
+    function moveProductOrder(index, direction) {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= products.length) return;
+      const temp = products[index];
+      products[index] = products[targetIndex];
+      products[targetIndex] = temp;
+      saveState();
+      renderAdminDashboard();
+    }
+
+    function openProductModal(prodId = null) {
+      const select = document.getElementById('adminProdCat');
+      select.innerHTML = '';
+      categories.filter(c => c.id !== 'all').forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.innerText = c.name;
+        select.appendChild(opt);
+      });
+
+      document.getElementById('adminProdFileInput').value = '';
+
+      if (prodId) {
+        const p = products.find(prod => prod.id === prodId);
+        document.getElementById('productModalTitle').innerText = 'تعديل الصنف';
+        document.getElementById('adminEditProdId').value = p.id;
+        document.getElementById('adminProdName').value = p.name;
+        document.getElementById('adminProdCat').value = p.categoryId;
+        document.getElementById('adminProdPrice').value = p.priceKilo;
+        document.getElementById('adminProdImg').value = p.img;
+        previewSelectedImg(p.img);
+        document.getElementById('adminProdTip').value = p.tip || '';
+        document.getElementById('adminProdInStock').checked = p.inStock;
+        document.getElementById('adminProdLowStock').checked = p.lowStock || false;
+        document.getElementById('grindGrain').checked = p.grindTypes.includes('grain');
+        document.getElementById('grindFine').checked = p.grindTypes.includes('fine');
+        document.getElementById('grindCrushed').checked = p.grindTypes.includes('crushed');
+      } else {
+        document.getElementById('productModalTitle').innerText = 'إضافة صنف جديد';
+        document.getElementById('adminEditProdId').value = '';
+        document.getElementById('adminProdName').value = '';
+        document.getElementById('adminProdPrice').value = '';
+        document.getElementById('adminProdImg').value = '';
+        previewSelectedImg('');
+        document.getElementById('adminProdTip').value = '';
+        document.getElementById('adminProdInStock').checked = true;
+        document.getElementById('adminProdLowStock').checked = false;
+        document.getElementById('grindGrain').checked = true;
+        document.getElementById('grindFine').checked = true;
+        document.getElementById('grindCrushed').checked = true;
+      }
+      document.getElementById('productModal').style.display = 'flex';
+    }
+
+    function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const base64Img = event.target.result;
+          document.getElementById('adminProdImg').value = base64Img;
+          previewSelectedImg(base64Img);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function previewSelectedImg(src) {
+      const imgEl = document.getElementById('adminProdImgPreview');
+      if (src) {
+        imgEl.src = src;
+        imgEl.style.display = 'block';
+        document.getElementById('imgPreviewText').style.display = 'none';
+      } else {
+        imgEl.style.display = 'none';
+        document.getElementById('imgPreviewText').style.display = 'inline';
+      }
+    }
+
+    function saveProductAdmin() {
+      const id = document.getElementById('adminEditProdId').value;
+      const name = document.getElementById('adminProdName').value.trim();
+      const categoryId = document.getElementById('adminProdCat').value;
+      const priceKilo = parseFloat(document.getElementById('adminProdPrice').value);
+      const img = document.getElementById('adminProdImg').value.trim() || 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&auto=format&fit=crop&q=60';
+      const tip = document.getElementById('adminProdTip').value.trim();
+      const inStock = document.getElementById('adminProdInStock').checked;
+      const lowStock = document.getElementById('adminProdLowStock').checked;
+
+      const grindTypes = [];
+      if (document.getElementById('grindGrain').checked) grindTypes.push('grain');
+      if (document.getElementById('grindFine').checked) grindTypes.push('fine');
+      if (document.getElementById('grindCrushed').checked) grindTypes.push('crushed');
+      if (grindTypes.length === 0) grindTypes.push('none');
+
+      if (!name || isNaN(priceKilo)) return alert("يرجى إدخال اسم الصنف وسعر الكيلو بشكل صحيح.");
+
+      if (id) {
+        const idx = products.findIndex(p => p.id === id);
+        if (idx !== -1) {
+          products[idx] = { ...products[idx], name, categoryId, priceKilo, img, tip, inStock, lowStock, grindTypes };
+        }
+      } else {
+        products.unshift({
+          id: 'prod_' + Date.now(),
+          name, categoryId, priceKilo, img, tip, inStock, lowStock, grindTypes,
+          dateAdded: Date.now()
+        });
+      }
+
+      saveState();
+      renderAdminDashboard();
+      closeModal('productModal');
+    }
+
+    function deleteProductAdmin(id) {
+      if (confirm("هل أنت متأكد من حذف هذا الصنف نهائياً؟")) {
+        products = products.filter(p => p.id !== id);
         saveState();
         renderAdminDashboard();
       }
     }
 
-    function deleteProductAdmin(id) {
-      if (confirm("هل أنت متأكد من حذف هذا الصنف بالكامل؟")) {
-        products = products.filter(p => p.id !== id);
+    /* Bulk Price Adjustment Logic */
+    function openBulkPriceModal() {
+      const select = document.getElementById('bulkCategorySelect');
+      select.innerHTML = '<option value="all">كل الأصناف في المتجر</option>';
+      categories.filter(c => c.id !== 'all').forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.innerText = c.name;
+        select.appendChild(opt);
+      });
+      document.getElementById('bulkPriceModal').style.display = 'flex';
+    }
+
+    function applyBulkPriceAdjustment() {
+      const catId = document.getElementById('bulkCategorySelect').value;
+      const type = document.getElementById('bulkTypeSelect').value;
+      const val = parseFloat(document.getElementById('bulkValueInput').value);
+
+      if (isNaN(val)) return alert("يرجى إدخال قيمة صحيحة للتعديل.");
+
+      products.forEach(p => {
+        if (catId === 'all' || p.categoryId === catId) {
+          if (type === 'percent') {
+            p.priceKilo = Math.max(0, p.priceKilo + (p.priceKilo * (val / 100)));
+          } else {
+            p.priceKilo = Math.max(0, p.priceKilo + val);
+          }
+          p.priceKilo = Math.round(p.priceKilo * 100) / 100;
+        }
+      });
+
+      saveState();
+      renderAdminDashboard();
+      closeModal('bulkPriceModal');
+      alert("تم تطبيق التعديل الجماعي على الأسعار بنجاح!");
+    }
+
+    /* Category Manager Logic */
+    function openCategoryManager() {
+      renderCategoryListAdmin();
+      document.getElementById('categoryModal').style.display = 'flex';
+    }
+
+    function renderCategoryListAdmin() {
+      const container = document.getElementById('adminCatListContainer');
+      container.innerHTML = '';
+      categories.forEach(c => {
+        if (c.id === 'all') return;
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.justifyContent = 'space-between';
+        row.style.alignItems = 'center';
+        row.style.padding = '8px 0';
+        row.style.borderBottom = '1px solid var(--border)';
+        row.innerHTML = `
+          <span style="font-weight:700;">${c.name}</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-step" style="width:auto; padding:4px 10px; font-size:0.75rem; background:${c.active ? 'var(--success)' : '#64748b'};" onclick="toggleCategoryStatus('${c.id}')">${c.active ? 'مفعل' : 'معطل'}</button>
+            <button class="cart-del-btn" onclick="deleteCategoryAdmin('${c.id}')"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function addNewCategory() {
+      const name = document.getElementById('newCatName').value.trim();
+      if (!name) return alert("يرجى إدخال اسم القسم.");
+      const id = 'cat_' + Date.now();
+      categories.push({ id, name, active: true });
+      document.getElementById('newCatName').value = '';
+      saveState();
+      renderCategoryNav();
+      renderCategoryListAdmin();
+    }
+
+    function toggleCategoryStatus(id) {
+      const cat = categories.find(c => c.id === id);
+      if (cat) {
+        cat.active = !cat.active;
         saveState();
-        renderAdminDashboard();
+        renderCategoryNav();
+        renderCategoryListAdmin();
       }
+    }
+
+    function deleteCategoryAdmin(id) {
+      if (confirm("هل أنت متأكد من حذف هذا القسم؟")) {
+        categories = categories.filter(c => c.id !== id);
+        saveState();
+        renderCategoryNav();
+        renderCategoryListAdmin();
+      }
+    }
+
+    /* Store Settings Logic */
+    function openStoreSettings() {
+      document.getElementById('setWhatsapp').value = storeConfig.whatsappNumber;
+      document.getElementById('setAdminPass').value = storeConfig.adminPass;
+      document.getElementById('setAnnouncement').value = storeConfig.announcement;
+      document.getElementById('setMinOrder').value = storeConfig.minOrderDelivery;
+      document.getElementById('setFreeDelivery').value = storeConfig.freeDeliveryLimit;
+      document.getElementById('setGargareschHours').value = storeConfig.branches.gargaresch.hours;
+      document.getElementById('setGargareschMap').value = storeConfig.branches.gargaresch.mapUrl;
+      document.getElementById('setAbusettaHours').value = storeConfig.branches.abusetta.hours;
+      document.getElementById('setAbusettaMap').value = storeConfig.branches.abusetta.mapUrl;
+      document.getElementById('setBankDetails').value = storeConfig.bankDetails;
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function saveStoreSettings() {
+      storeConfig.whatsappNumber = document.getElementById('setWhatsapp').value.trim();
+      storeConfig.adminPass = document.getElementById('setAdminPass').value.trim();
+      storeConfig.announcement = document.getElementById('setAnnouncement').value.trim();
+      storeConfig.minOrderDelivery = parseFloat(document.getElementById('setMinOrder').value) || 20;
+      storeConfig.freeDeliveryLimit = parseFloat(document.getElementById('setFreeDelivery').value) || 100;
+      storeConfig.branches.gargaresch.hours = document.getElementById('setGargareschHours').value.trim();
+      storeConfig.branches.gargaresch.mapUrl = document.getElementById('setGargareschMap').value.trim();
+      storeConfig.branches.abusetta.hours = document.getElementById('setAbusettaHours').value.trim();
+      storeConfig.branches.abusetta.mapUrl = document.getElementById('setAbusettaMap').value.trim();
+      storeConfig.bankDetails = document.getElementById('setBankDetails').value.trim();
+
+      saveState();
+      applyConfigUI();
+      closeModal('settingsModal');
+      alert("تم حفظ جميع الإعدادات ورقم الواتساب بنجاح!");
     }
   </script>
 </body>
