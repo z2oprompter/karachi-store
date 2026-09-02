@@ -1050,7 +1050,7 @@
         </div>
       </div>
 
-      <!-- جديد: قسم إدارة الفروع -->
+      <!-- قسم إدارة الفروع والخرائط -->
       <div class="settings-section">
         <h4><i class="fa-solid fa-location-dot"></i> إدارة الفروع وخريطة المتجر</h4>
         <div id="adminBranchesList" style="margin-bottom:10px;display:flex;flex-direction:column;gap:10px;"></div>
@@ -1212,7 +1212,6 @@
     <div style="font-size:.85rem;font-weight:700;color:var(--text-muted);margin-bottom:12px;">
       © 2026 <span id="footerStoreName">كراتشي</span>.
     </div>
-    <!-- الروابط الخاصة بالفروع التي تظهر للزبائن في أسفل الصفحة -->
     <div id="footerBranches" style="display:flex; justify-content:center; flex-wrap:wrap; gap:16px;"></div>
   </footer>
 
@@ -1241,7 +1240,6 @@
         { id: "herbs", name: "أعشاب طبيعية" },
         { id: "nuts", name: "مكسرات ومسليات" }
       ],
-      // تغيير تصميم الفروع لتشمل رابط خرائط جوجل
       branches: [
         { name: "فرع قرقارش", mapUrl: "" },
         { name: "فرع أبو ستة", mapUrl: "" }
@@ -1261,7 +1259,7 @@
     let storeConfig = safeJSONParse(localStorage.getItem("karachi_config"), DEFAULT_STORE_CONFIG);
     let products = safeJSONParse(localStorage.getItem("karachi_prods"), DEFAULT_PRODUCTS);
     let cart = safeJSONParse(localStorage.getItem("karachi_cart"), []);
-    let tempBranches = []; // مؤقت للفروع داخل الإعدادات
+    let tempBranches = [];
 
     let activeCategory = "all";
     let activeScaleProduct = null;
@@ -1320,7 +1318,6 @@
 
       if (!Array.isArray(storeConfig.categories)) storeConfig.categories = clone(DEFAULT_STORE_CONFIG.categories);
       
-      // توافقية البيانات للفروع القديمة (نص عادي إلى كائن برابط الخريطة)
       if (!Array.isArray(storeConfig.branches)) storeConfig.branches = clone(DEFAULT_STORE_CONFIG.branches);
       storeConfig.branches = storeConfig.branches.map(b => typeof b === "string" ? { name: b, mapUrl: "" } : b);
 
@@ -1365,12 +1362,12 @@
     }
 
     /* =========================================================
-       CLOUD SYNC (KVDB FIX)
+       CLOUD SYNC (KVDB FIX: USES PUT WITH NO-PREFLIGHT)
     ========================================================= */
     async function syncFromCloud() {
       setCloudStatus('<i class="fa-solid fa-spinner fa-spin"></i> جاري المزامنة...');
       try {
-        const response = await fetch(CLOUD_ENDPOINT, { method: "GET", mode: "cors" });
+        const response = await fetch(CLOUD_ENDPOINT);
         if (response.status === 404) {
           setCloudStatus('<i class="fa-solid fa-cloud"></i> السحابة متصلة وجاهزة لتلقي البيانات');
           return;
@@ -1383,9 +1380,7 @@
           return;
         }
 
-        let data;
-        try { data = JSON.parse(text); } catch (e) { throw new Error("تنسيق السحابة تالف"); }
-
+        let data = JSON.parse(text);
         if (data && Array.isArray(data.products)) products = data.products;
         if (data && data.config) storeConfig = { ...storeConfig, ...data.config };
 
@@ -1408,17 +1403,15 @@
       try {
         const payload = { version: 2, updatedAt: new Date().toISOString(), products: products, config: storeConfig };
         
-        // تعديل مهم: تم تغيير mode إلى cors واستخدام POST مع application/json لكي يدعمه KVDB بشكل سليم.
+        // استخدام PUT بدلاً من POST لأن KVDB يفرض PUT لتخزين المفاتيح
+        // واستخدام text/plain لتجاوز رفض CORS Preflight من المتصفح
         const response = await fetch(CLOUD_ENDPOINT, {
-          method: "POST",
-          mode: "cors",
-          headers: { "Content-Type": "application/json" },
+          method: "PUT",
+          headers: { "Content-Type": "text/plain" },
           body: JSON.stringify(payload)
         });
 
-        if (!response.ok) {
-           throw new Error("السحابة رفضت الطلب (ربما مساحة ممتلئة أو الرابط غير صحيح)");
-        }
+        if (!response.ok) throw new Error("Cloud rejected request: " + response.status);
 
         setCloudStatus('<i class="fa-solid fa-cloud"></i> تم الحفظ السحابي بنجاح');
         showToast("تم الحفظ بنجاح", "success");
@@ -1426,7 +1419,7 @@
       } catch (error) {
         console.error("Cloud save failed:", error);
         setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> وضع عدم الاتصال - تم اعتماد النسخة المحلية');
-        showToast("حُفظ على الجهاز. السحابة لا تعمل حالياً.", "error");
+        showToast("حُفظ على الجهاز، وتعذر الوصول للسحابة.", "error");
         return false;
       }
     }
@@ -1586,7 +1579,6 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement("canvas");
-          // تم تقليل الدقة للحفاظ على السحابة المجانية (الصور الكبيرة تدمر JSON)
           const maxDim = 300; 
           let width = img.width;
           let height = img.height;
@@ -1605,7 +1597,6 @@
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, width, height);
 
-          // الجودة 0.5 لتصغير حجم النص المستخرج لـ Base64
           const compressedData = canvas.toDataURL("image/jpeg", 0.5);
           const input = document.getElementById(targetInputId);
           if (input) {
@@ -2422,7 +2413,6 @@
       storeConfig.discount = { active: document.getElementById("setDiscountActive").checked, percent: discountPercent, label: document.getElementById("setDiscountLabel").value.trim() || "خصم" };
       storeConfig.maintenanceMode = document.getElementById("setMaintenanceMode").checked; storeConfig.whatsappNumber = whatsapp; storeConfig.adminPass = adminPass;
       
-      // حفظ الفروع المعدلة
       storeConfig.branches = tempBranches.filter(b => b.name.trim() !== "");
 
       normalizeAllData(); saveLocalBackup(); applyThemeAndIdentity(); renderCategoryNav(); renderStoreProducts(); updateCartUI();
