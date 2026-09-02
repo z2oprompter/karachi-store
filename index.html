@@ -1222,55 +1222,22 @@
       whatsappNumber: "218922281994",
       announcement: "مرحباً بكم في متجرنا | أجود التوابل والمكسرات",
       maintenanceMode: false,
-      discount: {
-        active: false,
-        percent: 10,
-        label: "خصم الافتتاح"
-      },
-      banners: {
-        active: false,
-        items: []
-      },
+      discount: { active: false, percent: 10, label: "خصم الافتتاح" },
+      banners: { active: false, items: [] },
       categories: [
         { id: "spices", name: "توابل وبهارات" },
         { id: "blends", name: "خلطات خاصة" },
         { id: "herbs", name: "أعشاب طبيعية" },
         { id: "nuts", name: "مكسرات ومسليات" }
       ],
-      branches: ["الفرع الرئيسي"],
-      businessHours: {
-        openTime: "10:00",
-        closeTime: "20:00",
-        closedDays: [5]
-      },
-      paymentDelivery: {
-        delivery: true,
-        pickup: true,
-        cash: true,
-        card: true,
-        bank: true
-      }
+      branches: ["فرع قرقارش", "فرع أبو ستة"],
+      businessHours: { openTime: "10:00", closeTime: "20:00", closedDays: [5] },
+      paymentDelivery: { delivery: true, pickup: true, cash: true, card: true, bank: true }
     };
 
     const DEFAULT_PRODUCTS = [
-      {
-        id: "prod_1",
-        name: "فلفل أسود فاخر",
-        categoryId: "spices",
-        priceKilo: 76,
-        badge: "popular",
-        img: DEFAULT_IMAGE,
-        createdAt: Date.now() - 2000
-      },
-      {
-        id: "prod_2",
-        name: "كركم هندي أصلي",
-        categoryId: "spices",
-        priceKilo: 38,
-        badge: "none",
-        img: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=60",
-        createdAt: Date.now() - 1000
-      }
+      { id: "prod_1", name: "فلفل أسود فاخر", categoryId: "spices", priceKilo: 76, badge: "popular", img: DEFAULT_IMAGE, createdAt: Date.now() - 2000 },
+      { id: "prod_2", name: "كركم هندي أصلي", categoryId: "spices", priceKilo: 38, badge: "none", img: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=60", createdAt: Date.now() - 1000 }
     ];
 
     /* =========================================================
@@ -1318,18 +1285,13 @@
         return clone(fallback);
       }
     }
-
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
+    function clone(value) { return JSON.parse(JSON.stringify(value)); }
 
     /* =========================================================
        NORMALIZE DATA
     ========================================================= */
     function normalizeAllData() {
-      if (!storeConfig || typeof storeConfig !== "object") {
-        storeConfig = clone(DEFAULT_STORE_CONFIG);
-      }
+      if (!storeConfig || typeof storeConfig !== "object") storeConfig = clone(DEFAULT_STORE_CONFIG);
 
       storeConfig = {
         ...clone(DEFAULT_STORE_CONFIG),
@@ -1341,16 +1303,13 @@
       };
 
       if (!Array.isArray(storeConfig.categories)) storeConfig.categories = clone(DEFAULT_STORE_CONFIG.categories);
-      if (!Array.isArray(storeConfig.branches)) storeConfig.branches = ["الفرع الرئيسي"];
+      if (!Array.isArray(storeConfig.branches)) storeConfig.branches = ["فرع قرقارش", "فرع أبو ستة"];
       if (!Array.isArray(storeConfig.banners.items)) storeConfig.banners.items = [];
       if (!Array.isArray(storeConfig.businessHours.closedDays)) storeConfig.businessHours.closedDays = [];
 
-      storeConfig.businessHours.closedDays = storeConfig.businessHours.closedDays
-        .map(Number)
-        .filter(n => Number.isInteger(n) && n >= 0 && n <= 6);
+      storeConfig.businessHours.closedDays = storeConfig.businessHours.closedDays.map(Number).filter(n => Number.isInteger(n) && n >= 0 && n <= 6);
 
       if (!Array.isArray(products)) products = [];
-
       products = products.map((p, index) => ({
         id: p.id || ("prod_" + Date.now() + "_" + index),
         name: String(p.name || "صنف بدون اسم"),
@@ -1382,36 +1341,30 @@
         localStorage.setItem("karachi_prods", JSON.stringify(products));
         localStorage.setItem("karachi_config", JSON.stringify(storeConfig));
         localStorage.setItem("karachi_cart", JSON.stringify(cart));
-      } catch (e) {
-        console.error("Local save error:", e);
-      }
+      } catch (e) { console.error("Local save error:", e); }
     }
 
     /* =========================================================
-       CLOUD SYNC
+       CLOUD SYNC (CORS BYPASS APPLIED)
     ========================================================= */
     async function syncFromCloud() {
       setCloudStatus('<i class="fa-solid fa-spinner fa-spin"></i> جاري المزامنة...');
       try {
-        const response = await fetch(CLOUD_ENDPOINT + "?t=" + Date.now(), {
-          method: "GET",
-          cache: "no-store"
-        });
-
+        const response = await fetch(CLOUD_ENDPOINT, { method: "GET", mode: "cors" });
+        if (response.status === 404) {
+          setCloudStatus('<i class="fa-solid fa-cloud"></i> السحابة متصلة وجاهزة لتلقي البيانات');
+          return;
+        }
         if (!response.ok) throw new Error("HTTP " + response.status);
 
         const text = await response.text();
         if (!text || !text.trim()) {
-          setCloudStatus('<i class="fa-solid fa-cloud"></i> السحابة فارغة - تم اعتماد النسخة المحلية');
+          setCloudStatus('<i class="fa-solid fa-cloud"></i> السحابة متصلة وجاهزة');
           return;
         }
 
         let data;
-        try {
-          data = JSON.parse(text);
-        } catch (e) {
-          throw new Error("تنسيق السحابة تالف");
-        }
+        try { data = JSON.parse(text); } catch (e) { throw new Error("تنسيق السحابة تالف"); }
 
         if (data && Array.isArray(data.products)) products = data.products;
         if (data && data.config) storeConfig = { ...storeConfig, ...data.config };
@@ -1424,7 +1377,7 @@
         checkBusinessHours();
         setCloudStatus('<i class="fa-solid fa-cloud"></i> السحابة متصلة ومحدثة');
       } catch (error) {
-        console.warn("Cloud sync failed:", error);
+        console.warn("Cloud sync warning:", error);
         setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> وضع عدم الاتصال - تم اعتماد النسخة المحلية');
       }
     }
@@ -1432,35 +1385,23 @@
     async function syncToCloud() {
       saveLocalBackup();
       setCloudStatus('<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ سحابياً...');
-
       try {
-        const payload = {
-          version: 2,
-          updatedAt: new Date().toISOString(),
-          products: products,
-          config: storeConfig
-        };
-
-        const jsonStr = JSON.stringify(payload);
-        // قياس حجم البيانات للوقاية
-        const sizeInKB = Math.round(new Blob([jsonStr]).size / 1024);
-        if (sizeInKB > 1500) {
-          console.warn(`تحذير: حجم البيانات كبير جداً (${sizeInKB} KB). يُفضل مسح بعض الصور الكبيرة.`);
-        }
-
+        const payload = { version: 2, updatedAt: new Date().toISOString(), products: products, config: storeConfig };
+        
         const response = await fetch(CLOUD_ENDPOINT, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: jsonStr
+          mode: "cors",
+          headers: { "Content-Type": "text/plain;charset=UTF-8" },
+          body: JSON.stringify(payload)
         });
 
         if (!response.ok) throw new Error("HTTP " + response.status);
-
+        
         setCloudStatus('<i class="fa-solid fa-cloud"></i> تم الحفظ السحابي بنجاح');
         return true;
       } catch (error) {
         console.error("Cloud save failed:", error);
-        setCloudStatus('<i class="fa-solid fa-floppy-disk"></i> حُفظ محلياً (فشل في السحابة)');
+        setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> وضع عدم الاتصال - تم اعتماد النسخة المحلية');
         showToast("حُفظ على الجهاز، وتعذر الوصول للسحابة.", "error");
         return false;
       }
@@ -1489,7 +1430,6 @@
       logo.onerror = () => { logo.src = DEFAULT_IMAGE; };
 
       document.getElementById("announcementText").innerText = storeConfig.announcement || "مرحباً بكم في متجرنا";
-
       const overlay = document.getElementById("maintenanceOverlay");
       overlay.style.display = storeConfig.maintenanceMode ? "flex" : "none";
 
@@ -1555,9 +1495,7 @@
       const closeMinutes = timeToMinutes(bh.closeTime);
 
       let isOpen = true;
-      if (Array.isArray(bh.closedDays) && bh.closedDays.includes(day)) {
-        isOpen = false;
-      }
+      if (Array.isArray(bh.closedDays) && bh.closedDays.includes(day)) isOpen = false;
 
       if (openMinutes === closeMinutes) {
         isOpen = false;
@@ -1600,7 +1538,7 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement("canvas");
-          const maxDim = 400; // أبعاد مصغرة لحماية الحجم السحابي
+          const maxDim = 400; 
           let width = img.width;
           let height = img.height;
 
@@ -1613,13 +1551,11 @@
               height = maxDim;
             }
           }
-
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, width, height);
 
-          // ضغط محسّن بحجم قليل جداً
           const compressedData = canvas.toDataURL("image/jpeg", 0.55);
           const input = document.getElementById(targetInputId);
           if (input) {
@@ -1680,11 +1616,7 @@
       const slider = document.getElementById("promoSlider");
       if (!slider) return;
       slider.innerHTML = "";
-
-      if (sliderTimer) {
-        clearInterval(sliderTimer);
-        sliderTimer = null;
-      }
+      if (sliderTimer) { clearInterval(sliderTimer); sliderTimer = null; }
 
       const items = storeConfig.banners && Array.isArray(storeConfig.banners.items) ? storeConfig.banners.items : [];
       if (!storeConfig.banners.active || items.length === 0) {
@@ -1738,9 +1670,7 @@
       if (sortVal === "price-asc") list.sort((a, b) => Number(a.priceKilo) - Number(b.priceKilo));
       if (sortVal === "price-desc") list.sort((a, b) => Number(b.priceKilo) - Number(a.priceKilo));
       if (sortVal === "newest") list.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
-      if (sortVal === "popular") {
-        list.sort((a, b) => (b.badge === "popular" ? 1 : 0) - (a.badge === "popular" ? 1 : 0));
-      }
+      if (sortVal === "popular") list.sort((a, b) => (b.badge === "popular" ? 1 : 0) - (a.badge === "popular" ? 1 : 0));
 
       grid.innerHTML = "";
       if (list.length === 0) {
@@ -1807,12 +1737,7 @@
     }
 
     function createProductBadge(badge) {
-      const map = {
-        popular: ["badge-popular", "الأكثر طلباً 🔥"],
-        new: ["badge-new", "جديد ✨"],
-        lowstock: ["badge-lowstock", "⚠️ قرب الانتهاء"],
-        outofstock: ["badge-outofstock", "❌ غير متوفر"]
-      };
+      const map = { popular: ["badge-popular", "الأكثر طلباً 🔥"], new: ["badge-new", "جديد ✨"], lowstock: ["badge-lowstock", "⚠️ قرب الانتهاء"], outofstock: ["badge-outofstock", "❌ غير متوفر"] };
       if (!map[badge]) return null;
       const span = document.createElement("span");
       span.className = "badge-tag " + map[badge][0];
@@ -1826,10 +1751,8 @@
     function openScaleModal(prodId) {
       activeScaleProduct = products.find(p => p.id === prodId);
       if (!activeScaleProduct) return;
-
       document.getElementById("scaleItemTitle").innerText = activeScaleProduct.name;
       document.getElementById("scaleItemSubtitle").innerText = `سعر الكيلو: ${Number(activeScaleProduct.priceKilo).toFixed(2)} د.ل`;
-
       setScaleMode("weight");
       setExactWeight(100);
       document.getElementById("scaleItemNote").value = "";
@@ -1845,22 +1768,12 @@
       updateScaleDisplay();
     }
 
-    function setExactWeight(grams) {
-      currentScaleWeight = Math.max(50, Number(grams));
-      updateScaleDisplay();
-    }
-
-    function setExactCash(cash) {
-      currentScaleCash = Math.max(5, Number(cash));
-      updateScaleDisplay();
-    }
+    function setExactWeight(grams) { currentScaleWeight = Math.max(50, Number(grams)); updateScaleDisplay(); }
+    function setExactCash(cash) { currentScaleCash = Math.max(5, Number(cash)); updateScaleDisplay(); }
 
     function stepScale(dir) {
-      if (scaleMode === "weight") {
-        currentScaleWeight = Math.max(50, currentScaleWeight + dir * 50);
-      } else {
-        currentScaleCash = Math.max(5, currentScaleCash + dir * 5);
-      }
+      if (scaleMode === "weight") currentScaleWeight = Math.max(50, currentScaleWeight + dir * 50);
+      else currentScaleCash = Math.max(5, currentScaleCash + dir * 5);
       updateScaleDisplay();
     }
 
@@ -1884,14 +1797,9 @@
     function addScaleItemToCart() {
       if (!activeScaleProduct) return;
       const kiloPrice = Number(activeScaleProduct.priceKilo);
-      if (!Number.isFinite(kiloPrice) || kiloPrice <= 0) {
-        showToast("سعر الصنف غير صالح.", "error");
-        return;
-      }
+      if (!Number.isFinite(kiloPrice) || kiloPrice <= 0) { showToast("سعر الصنف غير صالح.", "error"); return; }
 
-      let finalPrice;
-      let finalGrams;
-
+      let finalPrice, finalGrams;
       if (scaleMode === "weight") {
         finalGrams = currentScaleWeight;
         finalPrice = (finalGrams / 1000) * kiloPrice;
@@ -1900,10 +1808,7 @@
         finalGrams = Math.round((finalPrice / kiloPrice) * 1000);
       }
 
-      if (!Number.isFinite(finalPrice) || finalPrice <= 0 || finalGrams <= 0) {
-        showToast("تعذر حساب السعر.", "error");
-        return;
-      }
+      if (!Number.isFinite(finalPrice) || finalPrice <= 0 || finalGrams <= 0) { showToast("تعذر حساب السعر.", "error"); return; }
 
       cart.push({
         id: "cart_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
@@ -1926,14 +1831,11 @@
     function getCartTotals() {
       const grossTotal = cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
       let discountAmount = 0;
-
       if (storeConfig.discount && storeConfig.discount.active) {
         const percent = Math.min(100, Math.max(0, Number(storeConfig.discount.percent) || 0));
         discountAmount = (grossTotal * percent) / 100;
       }
-
-      const netTotal = Math.max(0, grossTotal - discountAmount);
-      return { grossTotal, discountAmount, netTotal };
+      return { grossTotal, discountAmount, netTotal: Math.max(0, grossTotal - discountAmount) };
     }
 
     function updateCartUI() {
@@ -1950,9 +1852,7 @@
           box.style.display = "flex";
           document.getElementById("cartDiscountLabel").innerText = `${storeConfig.discount.label} (${Number(storeConfig.discount.percent)}%)`;
           document.getElementById("cartDiscountValue").innerText = `-${totals.discountAmount.toFixed(2)} د.ل`;
-        } else {
-          box.style.display = "none";
-        }
+        } else { box.style.display = "none"; }
       }
     }
 
@@ -1978,11 +1878,9 @@
 
         const info = document.createElement("div");
         info.style.flex = "1";
-
         const strong = document.createElement("strong");
         strong.innerText = item.name;
         info.appendChild(strong);
-
         const meta = document.createElement("div");
         meta.innerText = ` (${item.grams} جم)`;
         info.appendChild(meta);
@@ -1996,11 +1894,9 @@
 
         const right = document.createElement("div");
         right.style.cssText = "display:flex;align-items:center;gap:8px";
-
         const price = document.createElement("span");
         price.style.cssText = "font-weight:900;color:var(--primary)";
         price.innerText = `${Number(item.price).toFixed(2)} د.ل`;
-
         const del = document.createElement("button");
         del.className = "cart-del-btn";
         del.innerHTML = '<i class="fa-solid fa-trash"></i>';
@@ -2008,7 +1904,6 @@
 
         right.appendChild(price);
         right.appendChild(del);
-
         row.appendChild(info);
         row.appendChild(right);
         container.appendChild(row);
@@ -2029,7 +1924,6 @@
         button.onclick = () => setOrderMethod("delivery");
         toggle.appendChild(button);
       }
-
       if (pd.pickup) {
         const button = document.createElement("button");
         button.id = "btnMethodPickup";
@@ -2039,7 +1933,6 @@
         button.onclick = () => setOrderMethod("pickup");
         toggle.appendChild(button);
       }
-
       if (!pd.delivery && !pd.pickup) {
         toggle.innerHTML = '<div style="color:var(--danger);font-size:.8rem">لا توجد طرق استلام متاحة حالياً.</div>';
       }
@@ -2050,7 +1943,7 @@
 
       const branchSelect = document.getElementById("pickupBranchSelect");
       branchSelect.innerHTML = "";
-      const branches = Array.isArray(storeConfig.branches) ? storeConfig.branches : ["الفرع الرئيسي"];
+      const branches = Array.isArray(storeConfig.branches) ? storeConfig.branches : ["فرع قرقارش", "فرع أبو ستة"];
       branches.forEach(branch => {
         const option = document.createElement("option");
         option.value = branch;
@@ -2070,48 +1963,27 @@
       orderMethod = method;
       const deliveryButton = document.getElementById("btnMethodDelivery");
       const pickupButton = document.getElementById("btnMethodPickup");
-
       if (deliveryButton) deliveryButton.className = "btn-action " + (method === "delivery" ? "active" : "");
       if (pickupButton) pickupButton.className = "btn-action " + (method === "pickup" ? "active" : "");
-
       document.getElementById("deliveryAddressSection").style.display = method === "delivery" ? "block" : "none";
       document.getElementById("pickupBranchSection").style.display = method === "pickup" ? "block" : "none";
     }
 
-    function removeCartItem(id) {
-      cart = cart.filter(item => item.id !== id);
-      saveLocalBackup();
-      updateCartUI();
-      openCartModal();
-    }
-
+    function removeCartItem(id) { cart = cart.filter(item => item.id !== id); saveLocalBackup(); updateCartUI(); openCartModal(); }
     function clearCartConfirm() {
       if (cart.length === 0) return;
-      if (confirm("هل تريد تفريغ محتويات السلة بالكامل؟")) {
-        cart = [];
-        saveLocalBackup();
-        updateCartUI();
-        openCartModal();
-      }
+      if (confirm("هل تريد تفريغ محتويات السلة بالكامل؟")) { cart = []; saveLocalBackup(); updateCartUI(); openCartModal(); }
     }
 
     /* =========================================================
        PHONE & ORDER ID (Cleaned Regex Fix)
     ========================================================= */
-    function normalizePhone(phone) {
-      return String(phone || "").replace(/[\s\-\(\)]/g, "");
-    }
-
-    function isValidPhone(phone) {
-      const clean = normalizePhone(phone);
-      return /^\+?\d{8,15}$/.test(clean);
-    }
+    function normalizePhone(phone) { return String(phone || "").replace(/[\s\-\(\)]/g, ""); }
+    function isValidPhone(phone) { const clean = normalizePhone(phone); return /^\+?\d{8,15}$/.test(clean); }
 
     function generateOrderId() {
       const date = new Date();
-      const datePart = String(date.getFullYear()).slice(-2) +
-        String(date.getMonth() + 1).padStart(2, "0") +
-        String(date.getDate()).padStart(2, "0");
+      const datePart = String(date.getFullYear()).slice(-2) + String(date.getMonth() + 1).padStart(2, "0") + String(date.getDate()).padStart(2, "0");
       const random = Math.floor(1000 + Math.random() * 9000);
       return datePart + "-" + random;
     }
@@ -2120,106 +1992,54 @@
        WHATSAPP ORDER
     ========================================================= */
     function sendWhatsAppOrder() {
-      if (cart.length === 0) {
-        showToast("سلة المشتريات فارغة.", "error");
-        return;
-      }
+      if (cart.length === 0) { showToast("سلة المشتريات فارغة.", "error"); return; }
 
       const customerName = document.getElementById("orderCustomerName").value.trim();
-      if (!customerName) {
-        showToast("يرجى إدخال اسم العميل.", "error");
-        document.getElementById("orderCustomerName").focus();
-        return;
-      }
+      if (!customerName) { showToast("يرجى إدخال اسم العميل.", "error"); document.getElementById("orderCustomerName").focus(); return; }
 
       const phone = normalizePhone(document.getElementById("orderPhone").value);
-      if (!phone || !isValidPhone(phone)) {
-        showToast("يرجى إدخال رقم هاتف صحيح.", "error");
-        return;
-      }
+      if (!phone || !isValidPhone(phone)) { showToast("يرجى إدخال رقم هاتف صحيح.", "error"); return; }
 
       const pd = storeConfig.paymentDelivery;
-      if (orderMethod === "delivery" && !pd.delivery) {
-        showToast("التوصيل غير متاح حالياً.", "error");
-        return;
-      }
-      if (orderMethod === "pickup" && !pd.pickup) {
-        showToast("الاستلام غير متاح حالياً.", "error");
-        return;
-      }
+      if (orderMethod === "delivery" && !pd.delivery) { showToast("التوصيل غير متاح حالياً.", "error"); return; }
+      if (orderMethod === "pickup" && !pd.pickup) { showToast("الاستلام غير متاح حالياً.", "error"); return; }
 
-      let address = "";
-      let branch = "";
-
+      let address = "", branch = "";
       if (orderMethod === "delivery") {
         address = document.getElementById("orderAddress").value.trim();
-        if (!address) {
-          showToast("يرجى إدخال عنوان التوصيل.", "error");
-          document.getElementById("orderAddress").focus();
-          return;
-        }
+        if (!address) { showToast("يرجى إدخال عنوان التوصيل.", "error"); document.getElementById("orderAddress").focus(); return; }
       } else {
         branch = document.getElementById("pickupBranchSelect").value;
-        if (!branch) {
-          showToast("يرجى اختيار الفرع.", "error");
-          return;
-        }
+        if (!branch) { showToast("يرجى اختيار الفرع.", "error"); return; }
       }
 
       const payment = document.getElementById("paymentMethodSelect").value;
-      if (!payment) {
-        showToast("لا توجد طريقة دفع مختارة.", "error");
-        return;
-      }
+      if (!payment) { showToast("لا توجد طريقة دفع مختارة.", "error"); return; }
 
       const totals = getCartTotals();
       const orderId = generateOrderId();
       currentOrderId = orderId;
 
-      let message = `🛒 *طلب جديد من ${storeConfig.storeName}*\n`;
-      message += `━━━━━━━━━━━━━━━━━━\n`;
-      message += `🔢 *رقم الطلب:* #${orderId}\n`;
-      message += `👤 *اسم العميل:* ${customerName}\n`;
-      message += `📱 *الهاتف:* ${phone}\n`;
-      message += `━━━━━━━━━━━━━━━━━━\n`;
-      message += `📦 *الطلبات:*\n`;
+      let message = `🛒 *طلب جديد من ${storeConfig.storeName}*\n━━━━━━━━━━━━━━━━━━\n🔢 *رقم الطلب:* #${orderId}\n👤 *اسم العميل:* ${customerName}\n📱 *الهاتف:* ${phone}\n━━━━━━━━━━━━━━━━━━\n📦 *الطلبات:*\n`;
 
       cart.forEach((item, index) => {
-        message += `${index + 1}. *${item.name}*\n`;
-        message += `   ⚖️ الوزن: ${item.grams} جم\n`;
-        message += `   💵 السعر: ${Number(item.price).toFixed(2)} د.ل\n`;
+        message += `${index + 1}. *${item.name}*\n   ⚖️ الوزن: ${item.grams} جم\n   💵 السعر: ${Number(item.price).toFixed(2)} د.ل\n`;
         if (item.note) message += `   📝 ملاحظة: ${item.note}\n`;
         message += "\n";
       });
 
-      message += `━━━━━━━━━━━━━━━━━━\n`;
-      message += `💰 *الإجمالي قبل الخصم:* ${totals.grossTotal.toFixed(2)} د.ل\n`;
-      if (totals.discountAmount > 0) {
-        message += `🎁 *${storeConfig.discount.label} (${storeConfig.discount.percent}%):* -${totals.discountAmount.toFixed(2)} د.ل\n`;
-      }
-      message += `💵 *الإجمالي الصافي:* ${totals.netTotal.toFixed(2)} د.ل\n`;
-      message += `━━━━━━━━━━━━━━━━━━\n`;
+      message += `━━━━━━━━━━━━━━━━━━\n💰 *الإجمالي قبل الخصم:* ${totals.grossTotal.toFixed(2)} د.ل\n`;
+      if (totals.discountAmount > 0) message += `🎁 *${storeConfig.discount.label} (${storeConfig.discount.percent}%):* -${totals.discountAmount.toFixed(2)} د.ل\n`;
+      message += `💵 *الإجمالي الصافي:* ${totals.netTotal.toFixed(2)} د.ل\n━━━━━━━━━━━━━━━━━━\n`;
       message += `🚚 *طريقة الاستلام:* ` + (orderMethod === "delivery" ? "توصيل" : "استلام من الفرع") + `\n`;
-      if (orderMethod === "delivery") {
-        message += `📍 *العنوان:* ${address}\n`;
-      } else {
-        message += `🏪 *الفرع:* ${branch}\n`;
-      }
-      message += `💳 *طريقة الدفع:* ${payment}\n`;
-      message += `━━━━━━━━━━━━━━━━━━\n`;
-      message += `⏱️ وقت الطلب: ${new Date().toLocaleString("ar-LY")}`;
+      if (orderMethod === "delivery") message += `📍 *العنوان:* ${address}\n`; else message += `🏪 *الفرع:* ${branch}\n`;
+      message += `💳 *طريقة الدفع:* ${payment}\n━━━━━━━━━━━━━━━━━━\n⏱️ وقت الطلب: ${new Date().toLocaleString("ar-LY")}`;
 
       const whatsapp = String(storeConfig.whatsappNumber || "").replace(/\D/g, "");
-      if (!whatsapp) {
-        showToast("رقم واتساب المتجر غير مضبوط من الإعدادات.", "error");
-        return;
-      }
+      if (!whatsapp) { showToast("رقم واتساب المتجر غير مضبوط من الإعدادات.", "error"); return; }
 
       const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`;
-      localStorage.setItem("karachi_last_order", JSON.stringify({
-        orderId, customerName, phone, address, branch, orderMethod, payment, cart: clone(cart), totals, createdAt: new Date().toISOString()
-      }));
-
+      localStorage.setItem("karachi_last_order", JSON.stringify({ orderId, customerName, phone, address, branch, orderMethod, payment, cart: clone(cart), totals, createdAt: new Date().toISOString() }));
       window.open(url, "_blank");
     }
 
@@ -2227,17 +2047,12 @@
        PDF RECEIPT
     ========================================================= */
     async function downloadReceiptPDF() {
-      if (cart.length === 0) {
-        showToast("السلة فارغة.", "error");
-        return;
-      }
+      if (cart.length === 0) { showToast("السلة فارغة.", "error"); return; }
 
       const customerName = document.getElementById("orderCustomerName").value.trim() || "زبون محترم";
       const phone = document.getElementById("orderPhone").value.trim() || "-";
       const payment = document.getElementById("paymentMethodSelect").value || "-";
-      const address = orderMethod === "delivery"
-        ? (document.getElementById("orderAddress").value.trim() || "-")
-        : (document.getElementById("pickupBranchSelect").value || "-");
+      const address = orderMethod === "delivery" ? (document.getElementById("orderAddress").value.trim() || "-") : (document.getElementById("pickupBranchSelect").value || "-");
 
       const orderId = currentOrderId || generateOrderId();
       currentOrderId = orderId;
@@ -2253,109 +2068,66 @@
       document.getElementById("pdfPayment").innerText = payment;
 
       const logo = document.getElementById("pdfLogoImg");
-      if (storeConfig.logoUrl) {
-        logo.src = storeConfig.logoUrl;
-        logo.style.display = "block";
-      } else {
-        logo.style.display = "none";
-      }
+      if (storeConfig.logoUrl) { logo.src = storeConfig.logoUrl; logo.style.display = "block"; } else { logo.style.display = "none"; }
 
       const tbody = document.getElementById("pdfTableBody");
       tbody.innerHTML = "";
-
       cart.forEach(item => {
         const tr = document.createElement("tr");
         tr.style.borderBottom = "1px solid #e5e7eb";
-        const name = document.createElement("td");
-        name.style.padding = "8px";
-        name.innerText = item.name;
-
-        const grams = document.createElement("td");
-        grams.style.padding = "8px";
-        grams.innerText = `${item.grams} جم`;
-
-        const price = document.createElement("td");
-        price.style.padding = "8px";
-        price.style.fontWeight = "bold";
-        price.innerText = `${Number(item.price).toFixed(2)} د.ل`;
-
-        tr.appendChild(name);
-        tr.appendChild(grams);
-        tr.appendChild(price);
-        tbody.appendChild(tr);
+        const name = document.createElement("td"); name.style.padding = "8px"; name.innerText = item.name;
+        const grams = document.createElement("td"); grams.style.padding = "8px"; grams.innerText = `${item.grams} جم`;
+        const price = document.createElement("td"); price.style.padding = "8px"; price.style.fontWeight = "bold"; price.innerText = `${Number(item.price).toFixed(2)} د.ل`;
+        tr.appendChild(name); tr.appendChild(grams); tr.appendChild(price); tbody.appendChild(tr);
       });
 
       document.getElementById("pdfGrossTotal").innerText = totals.grossTotal.toFixed(2);
       const discountRow = document.getElementById("pdfDiscountRow");
       if (totals.discountAmount > 0) {
-        discountRow.style.display = "block";
-        document.getElementById("pdfDiscountVal").innerText = totals.discountAmount.toFixed(2);
-      } else {
-        discountRow.style.display = "none";
-      }
-
+        discountRow.style.display = "block"; document.getElementById("pdfDiscountVal").innerText = totals.discountAmount.toFixed(2);
+      } else { discountRow.style.display = "none"; }
       document.getElementById("pdfTotalSum").innerText = totals.netTotal.toFixed(2);
+
       const element = document.getElementById("pdfPrintArea");
       element.style.display = "block";
 
       try {
         await html2pdf().set({
-          margin: [10, 10, 10, 10],
-          filename: `فاتورة_${orderId}.pdf`,
-          image: { type: "jpeg", quality: .95 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+          margin: [10, 10, 10, 10], filename: `فاتورة_${orderId}.pdf`, image: { type: "jpeg", quality: .95 },
+          html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
         }).from(element).save();
       } catch (error) {
-        console.error("PDF generation failed:", error);
-        showToast("تعذر إنشاء الفاتورة.", "error");
-      } finally {
-        element.style.display = "none";
-      }
+        console.error("PDF error:", error); showToast("تعذر إنشاء الفاتورة.", "error");
+      } finally { element.style.display = "none"; }
     }
 
     /* =========================================================
        ADMIN LOGIN
     ========================================================= */
     function handleSecretAdminClick() {
-      secretClickCount++;
-      clearTimeout(secretClickTimer);
+      secretClickCount++; clearTimeout(secretClickTimer);
       secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1500);
-
-      if (secretClickCount >= 3) {
-        secretClickCount = 0;
-        adminLogin(false);
-      }
+      if (secretClickCount >= 3) { secretClickCount = 0; adminLogin(false); }
     }
 
     function adminLogin(fromMaintenance) {
       const pass = prompt("أدخل رمز دخول الإدارة:");
       if (pass === null) return;
-
       if (pass === String(storeConfig.adminPass || "")) {
         document.getElementById("storeView").style.display = "none";
         document.getElementById("storeBottomBar").style.display = "none";
         document.getElementById("adminView").style.display = "block";
         document.getElementById("maintenanceOverlay").style.display = "none";
         renderAdminProducts();
-      } else {
-        alert("رمز الإدارة غير صحيح.");
-      }
+      } else { alert("رمز الإدارة غير صحيح."); }
     }
 
     function exitAdminView() {
       document.getElementById("adminView").style.display = "none";
       document.getElementById("storeView").style.display = "block";
       document.getElementById("storeBottomBar").style.display = "flex";
-
-      applyThemeAndIdentity();
-      renderCategoryNav();
-      renderStoreProducts();
-      updateCartUI();
-
-      if (storeConfig.maintenanceMode) {
-        document.getElementById("maintenanceOverlay").style.display = "flex";
-      }
+      applyThemeAndIdentity(); renderCategoryNav(); renderStoreProducts(); updateCartUI();
+      if (storeConfig.maintenanceMode) document.getElementById("maintenanceOverlay").style.display = "flex";
     }
 
     /* =========================================================
@@ -2364,125 +2136,63 @@
     function renderAdminProducts() {
       const container = document.getElementById("adminCardsList");
       container.innerHTML = "";
-
-      if (products.length === 0) {
-        container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted)">لا توجد منتجات حالياً.</div>`;
-        return;
-      }
+      if (products.length === 0) { container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted)">لا توجد منتجات حالياً.</div>`; return; }
 
       products.forEach((product, index) => {
-        const card = document.createElement("div");
-        card.className = "admin-product-card";
-
-        const top = document.createElement("div");
-        top.className = "admin-card-top";
-
-        const img = document.createElement("img");
-        img.className = "admin-card-img";
-        img.src = product.img || DEFAULT_IMAGE;
-        img.onerror = () => { img.src = DEFAULT_IMAGE; };
-
-        const info = document.createElement("div");
-        info.className = "admin-card-info";
-
-        const title = document.createElement("div");
-        title.className = "admin-card-title";
-        title.innerText = product.name;
-
+        const card = document.createElement("div"); card.className = "admin-product-card";
+        const top = document.createElement("div"); top.className = "admin-card-top";
+        const img = document.createElement("img"); img.className = "admin-card-img"; img.src = product.img || DEFAULT_IMAGE; img.onerror = () => { img.src = DEFAULT_IMAGE; };
+        const info = document.createElement("div"); info.className = "admin-card-info";
+        const title = document.createElement("div"); title.className = "admin-card-title"; title.innerText = product.name;
         const category = storeConfig.categories.find(c => c.id === product.categoryId);
-        const meta = document.createElement("div");
-        meta.className = "admin-card-meta";
-        meta.innerText = `${category ? category.name : "بدون قسم"} • ${Number(product.priceKilo).toFixed(2)} د.ل/كجم`;
+        const meta = document.createElement("div"); meta.className = "admin-card-meta"; meta.innerText = `${category ? category.name : "بدون قسم"} • ${Number(product.priceKilo).toFixed(2)} د.ل/كجم`;
 
-        info.appendChild(title);
-        info.appendChild(meta);
-        top.appendChild(img);
-        top.appendChild(info);
-
-        const actions = document.createElement("div");
-        actions.className = "admin-card-actions";
-
-        const moveGroup = document.createElement("div");
-        moveGroup.className = "action-btn-group";
+        info.appendChild(title); info.appendChild(meta); top.appendChild(img); top.appendChild(info);
+        const actions = document.createElement("div"); actions.className = "admin-card-actions";
+        const moveGroup = document.createElement("div"); moveGroup.className = "action-btn-group";
         const up = createActionButton("⬆️", () => moveProductOrder(index, -1));
         const down = createActionButton("⬇️", () => moveProductOrder(index, 1));
-        moveGroup.appendChild(up);
-        moveGroup.appendChild(down);
+        moveGroup.appendChild(up); moveGroup.appendChild(down);
 
-        const editGroup = document.createElement("div");
-        editGroup.className = "action-btn-group";
-        const edit = createActionButton("✏️ تعديل", () => openProductModal(product.id));
-        edit.style.color = "var(--primary)";
-        edit.style.borderColor = "var(--primary)";
-
-        const del = createActionButton("🗑️ حذف", () => deleteProductAdmin(product.id));
-        del.style.color = "var(--danger)";
-        del.style.borderColor = "var(--danger)";
-
-        editGroup.appendChild(edit);
-        editGroup.appendChild(del);
-
-        actions.appendChild(moveGroup);
-        actions.appendChild(editGroup);
-        card.appendChild(top);
-        card.appendChild(actions);
-        container.appendChild(card);
+        const editGroup = document.createElement("div"); editGroup.className = "action-btn-group";
+        const edit = createActionButton("✏️ تعديل", () => openProductModal(product.id)); edit.style.color = "var(--primary)"; edit.style.borderColor = "var(--primary)";
+        const del = createActionButton("🗑️ حذف", () => deleteProductAdmin(product.id)); del.style.color = "var(--danger)"; del.style.borderColor = "var(--danger)";
+        
+        editGroup.appendChild(edit); editGroup.appendChild(del); actions.appendChild(moveGroup); actions.appendChild(editGroup);
+        card.appendChild(top); card.appendChild(actions); container.appendChild(card);
       });
     }
 
     function createActionButton(text, callback) {
-      const button = document.createElement("button");
-      button.className = "btn-action";
-      button.innerText = text;
-      button.onclick = callback;
-      return button;
+      const button = document.createElement("button"); button.className = "btn-action"; button.innerText = text; button.onclick = callback; return button;
     }
 
     async function moveProductOrder(index, direction) {
       const target = index + direction;
       if (target < 0 || target >= products.length) return;
-      const temp = products[index];
-      products[index] = products[target];
-      products[target] = temp;
-
-      saveLocalBackup();
-      renderAdminProducts();
-      renderStoreProducts();
-      await syncToCloud();
+      const temp = products[index]; products[index] = products[target]; products[target] = temp;
+      saveLocalBackup(); renderAdminProducts(); renderStoreProducts(); await syncToCloud();
     }
 
     function openProductModal(prodId = null) {
       renderCategoryNav();
-      const idInput = document.getElementById("adminEditProdId");
-      const nameInput = document.getElementById("adminProdName");
-      const catInput = document.getElementById("adminProdCat");
-      const priceInput = document.getElementById("adminProdPrice");
-      const imgInput = document.getElementById("adminProdImg");
-      const badgeInput = document.getElementById("adminProdBadgeSelect");
+      const idInput = document.getElementById("adminEditProdId"); const nameInput = document.getElementById("adminProdName");
+      const catInput = document.getElementById("adminProdCat"); const priceInput = document.getElementById("adminProdPrice");
+      const imgInput = document.getElementById("adminProdImg"); const badgeInput = document.getElementById("adminProdBadgeSelect");
       const fileInput = document.getElementById("adminProdFileInput");
 
       if (prodId) {
         const product = products.find(p => p.id === prodId);
         if (!product) return;
         document.getElementById("productModalTitle").innerText = "تعديل الصنف";
-        idInput.value = product.id;
-        nameInput.value = product.name;
-        catInput.value = product.categoryId;
-        priceInput.value = product.priceKilo;
-        imgInput.value = product.img || "";
-        badgeInput.value = product.badge || "none";
+        idInput.value = product.id; nameInput.value = product.name; catInput.value = product.categoryId;
+        priceInput.value = product.priceKilo; imgInput.value = product.img || ""; badgeInput.value = product.badge || "none";
       } else {
         document.getElementById("productModalTitle").innerText = "إضافة صنف جديد";
-        idInput.value = "";
-        nameInput.value = "";
-        catInput.value = storeConfig.categories[0] ? storeConfig.categories[0].id : "";
-        priceInput.value = "";
-        imgInput.value = "";
-        badgeInput.value = "none";
+        idInput.value = ""; nameInput.value = ""; catInput.value = storeConfig.categories[0] ? storeConfig.categories[0].id : "";
+        priceInput.value = ""; imgInput.value = ""; badgeInput.value = "none";
       }
-
-      fileInput.value = "";
-      document.getElementById("productModal").style.display = "flex";
+      fileInput.value = ""; document.getElementById("productModal").style.display = "flex";
     }
 
     async function saveProductAdmin() {
@@ -2493,158 +2203,74 @@
       const img = document.getElementById("adminProdImg").value.trim() || DEFAULT_IMAGE;
       const badge = document.getElementById("adminProdBadgeSelect").value;
 
-      if (!name) {
-        showToast("يرجى إدخال اسم الصنف.", "error");
-        return;
-      }
-      if (!Number.isFinite(priceKilo) || priceKilo <= 0) {
-        showToast("يرجى إدخال سعر صحيح أكبر من صفر.", "error");
-        return;
-      }
-      if (!categoryId) {
-        showToast("يرجى اختيار القسم.", "error");
-        return;
-      }
+      if (!name) { showToast("يرجى إدخال اسم الصنف.", "error"); return; }
+      if (!Number.isFinite(priceKilo) || priceKilo <= 0) { showToast("يرجى إدخال سعر صحيح أكبر من صفر.", "error"); return; }
+      if (!categoryId) { showToast("يرجى اختيار القسم.", "error"); return; }
 
       if (id) {
-        const index = products.findIndex(p => p.id === id);
-        if (index === -1) return;
+        const index = products.findIndex(p => p.id === id); if (index === -1) return;
         products[index] = { ...products[index], name, categoryId, priceKilo, img, badge };
       } else {
-        products.unshift({
-          id: "prod_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
-          name, categoryId, priceKilo, img, badge, createdAt: Date.now()
-        });
+        products.unshift({ id: "prod_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), name, categoryId, priceKilo, img, badge, createdAt: Date.now() });
       }
 
-      saveLocalBackup();
-      renderAdminProducts();
-      renderCategoryNav();
-      renderStoreProducts();
-      closeModal("productModal");
-      showToast("تم حفظ الصنف بنجاح.", "success");
-      await syncToCloud();
+      saveLocalBackup(); renderAdminProducts(); renderCategoryNav(); renderStoreProducts();
+      closeModal("productModal"); showToast("تم حفظ الصنف بنجاح.", "success"); await syncToCloud();
     }
 
     async function deleteProductAdmin(id) {
-      const product = products.find(p => p.id === id);
-      if (!product) return;
+      const product = products.find(p => p.id === id); if (!product) return;
       if (!confirm(`هل أنت متأكد من حذف «${product.name}»؟`)) return;
-
-      products = products.filter(p => p.id !== id);
-      cart = cart.filter(item => item.productId !== id);
-
-      saveLocalBackup();
-      renderAdminProducts();
-      renderStoreProducts();
-      updateCartUI();
-      await syncToCloud();
-      showToast("تم حذف الصنف.", "success");
+      products = products.filter(p => p.id !== id); cart = cart.filter(item => item.productId !== id);
+      saveLocalBackup(); renderAdminProducts(); renderStoreProducts(); updateCartUI(); await syncToCloud(); showToast("تم حذف الصنف.", "success");
     }
 
     /* =========================================================
        ADMIN CATEGORIES
     ========================================================= */
-    function openAdminCategoriesModal() {
-      renderAdminCategoryList();
-      document.getElementById("categoriesAdminModal").style.display = "flex";
-    }
+    function openAdminCategoriesModal() { renderAdminCategoryList(); document.getElementById("categoriesAdminModal").style.display = "flex"; }
 
     function renderAdminCategoryList() {
-      const box = document.getElementById("adminCatList");
-      box.innerHTML = "";
-
-      if (storeConfig.categories.length === 0) {
-        box.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem">لا توجد أقسام.</div>';
-        return;
-      }
+      const box = document.getElementById("adminCatList"); box.innerHTML = "";
+      if (storeConfig.categories.length === 0) { box.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem">لا توجد أقسام.</div>'; return; }
 
       storeConfig.categories.forEach((category, index) => {
         const row = document.createElement("div");
         row.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:8px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;gap:8px";
-
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = category.name;
-        input.className = "order-input";
-        input.style.width = "65%";
+        const input = document.createElement("input"); input.type = "text"; input.value = category.name; input.className = "order-input"; input.style.width = "65%";
         input.onchange = () => updateCatName(index, input.value);
-
-        const del = document.createElement("button");
-        del.className = "cart-del-btn";
-        del.style.fontWeight = "bold";
-        del.innerHTML = '<i class="fa-solid fa-trash"></i> حذف';
+        const del = document.createElement("button"); del.className = "cart-del-btn"; del.style.fontWeight = "bold"; del.innerHTML = '<i class="fa-solid fa-trash"></i> حذف';
         del.onclick = () => deleteCat(index);
-
-        row.appendChild(input);
-        row.appendChild(del);
-        box.appendChild(row);
+        row.appendChild(input); row.appendChild(del); box.appendChild(row);
       });
     }
 
     async function updateCatName(index, newName) {
       const name = String(newName || "").trim();
-      if (!name) {
-        showToast("اسم القسم لا يمكن أن يكون فارغاً.", "error");
-        renderAdminCategoryList();
-        return;
-      }
+      if (!name) { showToast("اسم القسم لا يمكن أن يكون فارغاً.", "error"); renderAdminCategoryList(); return; }
       storeConfig.categories[index].name = name;
-      saveLocalBackup();
-      renderAdminCategoryList();
-      renderCategoryNav();
-      renderStoreProducts();
-      await syncToCloud();
+      saveLocalBackup(); renderAdminCategoryList(); renderCategoryNav(); renderStoreProducts(); await syncToCloud();
     }
 
     async function deleteCat(index) {
-      const category = storeConfig.categories[index];
-      if (!category) return;
-
+      const category = storeConfig.categories[index]; if (!category) return;
       const hasProducts = products.some(p => p.categoryId === category.id);
       if (hasProducts) {
         if (!confirm("هذا القسم يحتوي على منتجات. هل تريد المتابعة ونقل المنتجات للقسم الافتراضي؟")) return;
         const fallback = storeConfig.categories.find((_, i) => i !== index);
-        products.forEach(p => {
-          if (p.categoryId === category.id) p.categoryId = fallback ? fallback.id : "";
-        });
+        products.forEach(p => { if (p.categoryId === category.id) p.categoryId = fallback ? fallback.id : ""; });
       }
-
       storeConfig.categories.splice(index, 1);
       if (activeCategory === category.id) activeCategory = "all";
-
-      saveLocalBackup();
-      renderAdminCategoryList();
-      renderCategoryNav();
-      renderStoreProducts();
-      await syncToCloud();
+      saveLocalBackup(); renderAdminCategoryList(); renderCategoryNav(); renderStoreProducts(); await syncToCloud();
     }
 
     async function addNewAdminCategory() {
-      const input = document.getElementById("newAdminCatName");
-      const value = input.value.trim();
-      if (!value) {
-        showToast("اكتب اسم القسم أولاً.", "error");
-        return;
-      }
-
-      const duplicate = storeConfig.categories.some(c => c.name.trim().toLowerCase() === value.toLowerCase());
-      if (duplicate) {
-        showToast("هذا القسم موجود بالفعل.", "error");
-        return;
-      }
-
-      storeConfig.categories.push({
-        id: "cat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
-        name: value
-      });
-
-      input.value = "";
-      saveLocalBackup();
-      renderAdminCategoryList();
-      renderCategoryNav();
-      await syncToCloud();
-      showToast("تمت إضافة القسم.", "success");
+      const input = document.getElementById("newAdminCatName"); const value = input.value.trim();
+      if (!value) { showToast("اكتب اسم القسم أولاً.", "error"); return; }
+      if (storeConfig.categories.some(c => c.name.trim().toLowerCase() === value.toLowerCase())) { showToast("هذا القسم موجود بالفعل.", "error"); return; }
+      storeConfig.categories.push({ id: "cat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), name: value });
+      input.value = ""; saveLocalBackup(); renderAdminCategoryList(); renderCategoryNav(); await syncToCloud(); showToast("تمت إضافة القسم.", "success");
     }
 
     /* =========================================================
@@ -2655,20 +2281,15 @@
       document.getElementById("setThemeColor").value = storeConfig.themeColor || "#c25e00";
       document.getElementById("setLogoUrl").value = storeConfig.logoUrl || "";
       document.getElementById("setAnnouncement").value = storeConfig.announcement || "";
-
+      
       const bh = storeConfig.businessHours;
       document.getElementById("setOpenTime").value = bh.openTime || "10:00";
       document.getElementById("setCloseTime").value = bh.closeTime || "20:00";
-
-      const closedDay = Array.isArray(bh.closedDays) && bh.closedDays.length ? String(bh.closedDays[0]) : "10";
-      document.getElementById("setClosedDay").value = closedDay;
+      document.getElementById("setClosedDay").value = (Array.isArray(bh.closedDays) && bh.closedDays.length) ? String(bh.closedDays[0]) : "10";
 
       const pd = storeConfig.paymentDelivery;
-      document.getElementById("chkDelivery").checked = !!pd.delivery;
-      document.getElementById("chkPickup").checked = !!pd.pickup;
-      document.getElementById("chkCash").checked = !!pd.cash;
-      document.getElementById("chkCard").checked = !!pd.card;
-      document.getElementById("chkBank").checked = !!pd.bank;
+      document.getElementById("chkDelivery").checked = !!pd.delivery; document.getElementById("chkPickup").checked = !!pd.pickup;
+      document.getElementById("chkCash").checked = !!pd.cash; document.getElementById("chkCard").checked = !!pd.card; document.getElementById("chkBank").checked = !!pd.bank;
 
       const discount = storeConfig.discount;
       document.getElementById("setDiscountActive").checked = !!discount.active;
@@ -2692,66 +2313,30 @@
       const whatsapp = document.getElementById("setWhatsapp").value.trim().replace(/\s+/g, "").replace(/^\+/, "");
       const adminPass = document.getElementById("setAdminPass").value.trim();
 
-      if (!storeName) {
-        showToast("اسم المتجر مطلوب.", "error");
-        return;
-      }
-      if (!openTime || !closeTime) {
-        showToast("حدد أوقات العمل.", "error");
-        return;
-      }
-      if (!whatsapp || !/^\d{8,15}$/.test(whatsapp)) {
-        showToast("رقم واتساب المتجر غير صحيح.", "error");
-        return;
-      }
-      if (!adminPass) {
-        showToast("رمز الإدارة لا يمكن أن يكون فارغاً.", "error");
-        return;
-      }
+      if (!storeName) { showToast("اسم المتجر مطلوب.", "error"); return; }
+      if (!openTime || !closeTime) { showToast("حدد أوقات العمل.", "error"); return; }
+      if (!whatsapp || !/^\d{8,15}$/.test(whatsapp)) { showToast("رقم واتساب المتجر غير صحيح.", "error"); return; }
+      if (!adminPass) { showToast("رمز الإدارة لا يمكن أن يكون فارغاً.", "error"); return; }
 
       let discountPercent = Number(document.getElementById("setDiscountPercent").value);
-      if (!Number.isFinite(discountPercent)) discountPercent = 0;
-      discountPercent = Math.min(100, Math.max(0, discountPercent));
+      if (!Number.isFinite(discountPercent)) discountPercent = 0; discountPercent = Math.min(100, Math.max(0, discountPercent));
 
-      const closedDays = closedDayValue === "10" ? [] : [Number(closedDayValue)];
-
-      storeConfig.storeName = storeName;
-      storeConfig.themeColor = themeColor || "#c25e00";
-      storeConfig.logoUrl = document.getElementById("setLogoUrl").value;
+      storeConfig.storeName = storeName; storeConfig.themeColor = themeColor || "#c25e00"; storeConfig.logoUrl = document.getElementById("setLogoUrl").value;
       storeConfig.announcement = announcement || "مرحباً بكم في متجرنا";
-      storeConfig.businessHours = { openTime, closeTime, closedDays };
+      storeConfig.businessHours = { openTime, closeTime, closedDays: closedDayValue === "10" ? [] : [Number(closedDayValue)] };
+      
       storeConfig.paymentDelivery = {
-        delivery: document.getElementById("chkDelivery").checked,
-        pickup: document.getElementById("chkPickup").checked,
-        cash: document.getElementById("chkCash").checked,
-        card: document.getElementById("chkCard").checked,
-        bank: document.getElementById("chkBank").checked
+        delivery: document.getElementById("chkDelivery").checked, pickup: document.getElementById("chkPickup").checked,
+        cash: document.getElementById("chkCash").checked, card: document.getElementById("chkCard").checked, bank: document.getElementById("chkBank").checked
       };
 
-      if (!storeConfig.paymentDelivery.delivery && !storeConfig.paymentDelivery.pickup) {
-        showToast("فعّل طريقة استلام واحدة على الأقل.", "error");
-        return;
-      }
+      if (!storeConfig.paymentDelivery.delivery && !storeConfig.paymentDelivery.pickup) { showToast("فعّل طريقة استلام واحدة على الأقل.", "error"); return; }
 
-      storeConfig.discount = {
-        active: document.getElementById("setDiscountActive").checked,
-        percent: discountPercent,
-        label: document.getElementById("setDiscountLabel").value.trim() || "خصم"
-      };
+      storeConfig.discount = { active: document.getElementById("setDiscountActive").checked, percent: discountPercent, label: document.getElementById("setDiscountLabel").value.trim() || "خصم" };
+      storeConfig.maintenanceMode = document.getElementById("setMaintenanceMode").checked; storeConfig.whatsappNumber = whatsapp; storeConfig.adminPass = adminPass;
 
-      storeConfig.maintenanceMode = document.getElementById("setMaintenanceMode").checked;
-      storeConfig.whatsappNumber = whatsapp;
-      storeConfig.adminPass = adminPass;
-
-      normalizeAllData();
-      saveLocalBackup();
-      applyThemeAndIdentity();
-      renderCategoryNav();
-      renderStoreProducts();
-      updateCartUI();
-      closeModal("settingsModal");
-      showToast("تم حفظ الإعدادات.", "success");
-      await syncToCloud();
+      normalizeAllData(); saveLocalBackup(); applyThemeAndIdentity(); renderCategoryNav(); renderStoreProducts(); updateCartUI();
+      closeModal("settingsModal"); showToast("تم حفظ الإعدادات.", "success"); await syncToCloud();
     }
 
     /* =========================================================
@@ -2760,111 +2345,54 @@
     function openBannersModal() {
       document.getElementById("setBannersActive").checked = !!storeConfig.banners.active;
       document.getElementById("tempBannerUpload").value = "";
-      renderAdminBannersList();
-      document.getElementById("bannersModal").style.display = "flex";
+      renderAdminBannersList(); document.getElementById("bannersModal").style.display = "flex";
     }
 
-    async function saveBannerActivation() {
-      storeConfig.banners.active = document.getElementById("setBannersActive").checked;
-      saveLocalBackup();
-      applyThemeAndIdentity();
-      await syncToCloud();
-    }
+    async function saveBannerActivation() { storeConfig.banners.active = document.getElementById("setBannersActive").checked; saveLocalBackup(); applyThemeAndIdentity(); await syncToCloud(); }
 
     function renderAdminBannersList() {
-      const box = document.getElementById("adminBannersList");
-      box.innerHTML = "";
+      const box = document.getElementById("adminBannersList"); box.innerHTML = "";
       const items = storeConfig.banners.items || [];
-
-      if (items.length === 0) {
-        box.innerHTML = '<div style="font-size:.8rem;color:var(--text-muted);text-align:center;padding:15px">لا توجد إعلانات مضافة.</div>';
-        return;
-      }
+      if (items.length === 0) { box.innerHTML = '<div style="font-size:.8rem;color:var(--text-muted);text-align:center;padding:15px">لا توجد إعلانات مضافة.</div>'; return; }
 
       items.forEach((url, index) => {
-        const row = document.createElement("div");
-        row.style.cssText = "display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);padding:6px;border-radius:8px;gap:8px";
-
-        const img = document.createElement("img");
-        img.src = url;
-        img.style.cssText = "width:100px;height:55px;object-fit:cover;border-radius:6px";
-        img.onerror = () => { img.src = DEFAULT_IMAGE; };
-
-        const del = document.createElement("button");
-        del.className = "cart-del-btn";
-        del.style.fontWeight = "bold";
-        del.innerHTML = '<i class="fa-solid fa-trash"></i> حذف';
-        del.onclick = () => deleteBannerItem(index);
-
-        row.appendChild(img);
-        row.appendChild(del);
-        box.appendChild(row);
+        const row = document.createElement("div"); row.style.cssText = "display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);padding:6px;border-radius:8px;gap:8px";
+        const img = document.createElement("img"); img.src = url; img.style.cssText = "width:100px;height:55px;object-fit:cover;border-radius:6px"; img.onerror = () => { img.src = DEFAULT_IMAGE; };
+        const del = document.createElement("button"); del.className = "cart-del-btn"; del.style.fontWeight = "bold"; del.innerHTML = '<i class="fa-solid fa-trash"></i> حذف'; del.onclick = () => deleteBannerItem(index);
+        row.appendChild(img); row.appendChild(del); box.appendChild(row);
       });
     }
 
     async function addNewBanner() {
-      const input = document.getElementById("tempBannerUpload");
-      const url = input.value.trim();
-      if (!url) {
-        showToast("اختر صورة أولاً.", "error");
-        return;
-      }
-
+      const input = document.getElementById("tempBannerUpload"); const url = input.value.trim();
+      if (!url) { showToast("اختر صورة أولاً.", "error"); return; }
       if (!storeConfig.banners) storeConfig.banners = { active: true, items: [] };
       if (!Array.isArray(storeConfig.banners.items)) storeConfig.banners.items = [];
-
-      storeConfig.banners.items.push(url);
-      storeConfig.banners.active = true;
-      document.getElementById("setBannersActive").checked = true;
-
-      input.value = "";
-      saveLocalBackup();
-      renderAdminBannersList();
-      applyThemeAndIdentity();
-      await syncToCloud();
-      showToast("تمت إضافة الإعلان.", "success");
+      storeConfig.banners.items.push(url); storeConfig.banners.active = true; document.getElementById("setBannersActive").checked = true;
+      input.value = ""; saveLocalBackup(); renderAdminBannersList(); applyThemeAndIdentity(); await syncToCloud(); showToast("تمت إضافة الإعلان.", "success");
     }
 
     async function deleteBannerItem(index) {
       if (!confirm("هل تريد حذف هذا الإعلان؟")) return;
       storeConfig.banners.items.splice(index, 1);
       if (storeConfig.banners.items.length === 0) storeConfig.banners.active = false;
-
-      saveLocalBackup();
-      renderAdminBannersList();
-      applyThemeAndIdentity();
-      await syncToCloud();
-      showToast("تم حذف الإعلان.", "success");
+      saveLocalBackup(); renderAdminBannersList(); applyThemeAndIdentity(); await syncToCloud(); showToast("تم حذف الإعلان.", "success");
     }
 
     /* =========================================================
-       TOAST ALERTS
+       TOAST ALERTS & LISTENERS
     ========================================================= */
     let toastTimer = null;
     function showToast(message, type = "") {
-      const toast = document.getElementById("toast");
-      toast.innerText = message;
-      toast.className = "toast show " + type;
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { toast.className = "toast"; }, 3000);
+      const toast = document.getElementById("toast"); toast.innerText = message; toast.className = "toast show " + type;
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast.className = "toast"; }, 3000);
     }
-
-    /* =========================================================
-       KEYBOARD SHORTCUTS & BEFORE UNLOAD
-    ========================================================= */
+    
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") {
-        document.querySelectorAll(".modal-overlay").forEach(modal => {
-          if (modal.id !== "maintenanceOverlay" || !storeConfig.maintenanceMode) {
-            modal.style.display = "none";
-          }
-        });
-      }
+      if (event.key === "Escape") document.querySelectorAll(".modal-overlay").forEach(modal => { if (modal.id !== "maintenanceOverlay" || !storeConfig.maintenanceMode) modal.style.display = "none"; });
     });
-
-    window.addEventListener("beforeunload", () => {
-      saveLocalBackup();
-    });
+    
+    window.addEventListener("beforeunload", () => saveLocalBackup());
   </script>
 </body>
 </html>
