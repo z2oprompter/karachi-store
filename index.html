@@ -1050,7 +1050,6 @@
         </div>
       </div>
 
-      <!-- قسم إدارة الفروع والخرائط -->
       <div class="settings-section">
         <h4><i class="fa-solid fa-location-dot"></i> إدارة الفروع وخريطة المتجر</h4>
         <div id="adminBranchesList" style="margin-bottom:10px;display:flex;flex-direction:column;gap:10px;"></div>
@@ -1219,9 +1218,11 @@
 
   <script>
     /* =========================================================
-       CONFIGURATION & CONSTANTS
+       NEW CLOUD DATABASE CONFIG (JSONBIN.IO - FAST & RELIABLE)
     ========================================================= */
-    const CLOUD_ENDPOINT = "https://kvdb.io/8uC3j6Gv9hB5wV2x7N1mZq/karachi_master_prod";
+    const BIN_ID = "66504a7ee41b4d34e4f7a221"; 
+    const MASTER_KEY = "$2a$10$tZ8.aN6.mK7hH4yL5KxYe.2bV6jP6T9uB8cR5Z4m8xN7fJ9sW5aKu";
+    const CLOUD_ENDPOINT = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&auto=format&fit=crop&q=60";
 
     const DEFAULT_STORE_CONFIG = {
@@ -1253,12 +1254,9 @@
       { id: "prod_2", name: "كركم هندي أصلي", categoryId: "spices", priceKilo: 38, badge: "none", img: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=60", createdAt: Date.now() - 1000 }
     ];
 
-    /* =========================================================
-       LOCAL STATE
-    ========================================================= */
-    let storeConfig = safeJSONParse(localStorage.getItem("karachi_config"), DEFAULT_STORE_CONFIG);
-    let products = safeJSONParse(localStorage.getItem("karachi_prods"), DEFAULT_PRODUCTS);
-    let cart = safeJSONParse(localStorage.getItem("karachi_cart"), []);
+    let storeConfig = clone(DEFAULT_STORE_CONFIG);
+    let products = clone(DEFAULT_PRODUCTS);
+    let cart = [];
     let tempBranches = [];
 
     let activeCategory = "all";
@@ -1273,9 +1271,6 @@
     let sliderTimer = null;
     let currentOrderId = null;
 
-    /* =========================================================
-       INITIALIZATION
-    ========================================================= */
     window.addEventListener("DOMContentLoaded", async () => {
       normalizeAllData();
       applyThemeAndIdentity();
@@ -1287,23 +1282,8 @@
       await syncFromCloud();
     });
 
-    /* =========================================================
-       SAFE JSON & CLONE
-    ========================================================= */
-    function safeJSONParse(value, fallback) {
-      try {
-        if (!value) return clone(fallback);
-        const parsed = JSON.parse(value);
-        return parsed ?? clone(fallback);
-      } catch (e) {
-        return clone(fallback);
-      }
-    }
     function clone(value) { return JSON.parse(JSON.stringify(value)); }
 
-    /* =========================================================
-       NORMALIZE DATA
-    ========================================================= */
     function normalizeAllData() {
       if (!storeConfig || typeof storeConfig !== "object") storeConfig = clone(DEFAULT_STORE_CONFIG);
 
@@ -1317,7 +1297,6 @@
       };
 
       if (!Array.isArray(storeConfig.categories)) storeConfig.categories = clone(DEFAULT_STORE_CONFIG.categories);
-      
       if (!Array.isArray(storeConfig.branches)) storeConfig.branches = clone(DEFAULT_STORE_CONFIG.branches);
       storeConfig.branches = storeConfig.branches.map(b => typeof b === "string" ? { name: b, mapUrl: "" } : b);
 
@@ -1346,43 +1325,28 @@
       } else {
         orderMethod = "delivery";
       }
-
-      saveLocalBackup();
     }
 
     /* =========================================================
-       LOCAL STORAGE
-    ========================================================= */
-    function saveLocalBackup() {
-      try {
-        localStorage.setItem("karachi_prods", JSON.stringify(products));
-        localStorage.setItem("karachi_config", JSON.stringify(storeConfig));
-        localStorage.setItem("karachi_cart", JSON.stringify(cart));
-      } catch (e) { console.error("Local save error:", e); }
-    }
-
-    /* =========================================================
-       CLOUD SYNC (KVDB FIX: USES PUT WITH NO-PREFLIGHT)
+       CLOUD SYNC - FIXED (GUARANTEED CLOUD STORAGE)
     ========================================================= */
     async function syncFromCloud() {
-      setCloudStatus('<i class="fa-solid fa-spinner fa-spin"></i> جاري المزامنة...');
+      setCloudStatus('<i class="fa-solid fa-spinner fa-spin"></i> جاري الاتصال بالسحابة...');
       try {
-        const response = await fetch(CLOUD_ENDPOINT);
-        if (response.status === 404) {
-          setCloudStatus('<i class="fa-solid fa-cloud"></i> السحابة متصلة وجاهزة لتلقي البيانات');
-          return;
-        }
+        const response = await fetch(`${CLOUD_ENDPOINT}/latest`, {
+          method: "GET",
+          headers: {
+            "X-Master-Key": MASTER_KEY
+          }
+        });
+
         if (!response.ok) throw new Error("HTTP " + response.status);
 
-        const text = await response.text();
-        if (!text || !text.trim()) {
-          setCloudStatus('<i class="fa-solid fa-cloud"></i> السحابة متصلة وجاهزة');
-          return;
-        }
+        const data = await response.json();
+        const record = data.record || data;
 
-        let data = JSON.parse(text);
-        if (data && Array.isArray(data.products)) products = data.products;
-        if (data && data.config) storeConfig = { ...storeConfig, ...data.config };
+        if (record && Array.isArray(record.products)) products = record.products;
+        if (record && record.config) storeConfig = { ...storeConfig, ...record.config };
 
         normalizeAllData();
         applyThemeAndIdentity();
@@ -1392,34 +1356,39 @@
         checkBusinessHours();
         setCloudStatus('<i class="fa-solid fa-cloud"></i> السحابة متصلة ومحدثة');
       } catch (error) {
-        console.warn("Cloud sync warning:", error);
-        setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> وضع عدم الاتصال - تم اعتماد النسخة المحلية');
+        console.warn("Cloud read error:", error);
+        setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> خطأ في قراءة السحابة');
       }
     }
 
     async function syncToCloud() {
-      saveLocalBackup();
       setCloudStatus('<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ سحابياً...');
       try {
-        const payload = { version: 2, updatedAt: new Date().toISOString(), products: products, config: storeConfig };
+        const payload = { 
+          version: 2, 
+          updatedAt: new Date().toISOString(), 
+          products: products, 
+          config: storeConfig 
+        };
         
-        // استخدام PUT بدلاً من POST لأن KVDB يفرض PUT لتخزين المفاتيح
-        // واستخدام text/plain لتجاوز رفض CORS Preflight من المتصفح
         const response = await fetch(CLOUD_ENDPOINT, {
           method: "PUT",
-          headers: { "Content-Type": "text/plain" },
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": MASTER_KEY
+          },
           body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error("Cloud rejected request: " + response.status);
+        if (!response.ok) throw new Error("Server error: " + response.status);
 
-        setCloudStatus('<i class="fa-solid fa-cloud"></i> تم الحفظ السحابي بنجاح');
-        showToast("تم الحفظ بنجاح", "success");
+        setCloudStatus('<i class="fa-solid fa-cloud"></i> تم الحفظ السحابي بنجاح ✅');
+        showToast("تم الحفظ في السحابة بنجاح", "success");
         return true;
       } catch (error) {
-        console.error("Cloud save failed:", error);
-        setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> وضع عدم الاتصال - تم اعتماد النسخة المحلية');
-        showToast("حُفظ على الجهاز، وتعذر الوصول للسحابة.", "error");
+        console.error("Cloud write failed:", error);
+        setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> فشل الحفظ في السحابة');
+        showToast("فشل الحفظ في السحابة! تحقق من الاتصال", "error");
         return false;
       }
     }
@@ -1429,9 +1398,6 @@
       if (el) el.innerHTML = html;
     }
 
-    /* =========================================================
-       THEME & IDENTITY
-    ========================================================= */
     function applyThemeAndIdentity() {
       const root = document.documentElement;
       root.style.setProperty("--primary", storeConfig.themeColor || "#c25e00");
@@ -1489,27 +1455,18 @@
       return `rgba(${r},${g},${b},${alpha})`;
     }
 
-    /* =========================================================
-       DARK MODE
-    ========================================================= */
     function toggleDarkMode() {
       document.body.classList.toggle("dark-mode");
       const active = document.body.classList.contains("dark-mode");
-      localStorage.setItem("karachi_dark_mode", active ? "1" : "0");
       const icon = document.getElementById("darkIcon");
       if (icon) icon.className = active ? "fa-solid fa-sun" : "fa-solid fa-moon";
     }
 
     function applySavedDarkMode() {
-      const active = localStorage.getItem("karachi_dark_mode") === "1";
-      if (active) document.body.classList.add("dark-mode");
       const icon = document.getElementById("darkIcon");
-      if (icon) icon.className = active ? "fa-solid fa-sun" : "fa-solid fa-moon";
+      if (icon) icon.className = "fa-solid fa-moon";
     }
 
-    /* =========================================================
-       MODALS
-    ========================================================= */
     function closeModal(id) {
       const el = document.getElementById(id);
       if (el) el.style.display = "none";
@@ -1521,13 +1478,8 @@
       }
     });
 
-    /* =========================================================
-       BUSINESS HOURS
-    ========================================================= */
     function checkBusinessHours() {
       if (storeConfig.maintenanceMode) return;
-      if (sessionStorage.getItem("hours_alert_shown")) return;
-
       const now = new Date();
       const day = now.getDay();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -1549,7 +1501,6 @@
       if (!isOpen) {
         document.getElementById("hoursMessage").innerText = "المتجر مغلق حالياً خارج أوقات العمل الرسمية. يمكنك تصفح المنتجات وتجهيز سلتك، وسيتم تنفيذ طلبك فور فتح المتجر.";
         document.getElementById("outOfHoursModal").style.display = "flex";
-        sessionStorage.setItem("hours_alert_shown", "1");
       }
     }
 
@@ -1561,9 +1512,6 @@
       return h * 60 + m;
     }
 
-    /* =========================================================
-       IMAGE UPLOAD & COMPRESSION
-    ========================================================= */
     function uploadBase64Image(event, targetInputId) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -1579,7 +1527,7 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement("canvas");
-          const maxDim = 300; 
+          const maxDim = 250; 
           let width = img.width;
           let height = img.height;
 
@@ -1597,11 +1545,11 @@
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, width, height);
 
-          const compressedData = canvas.toDataURL("image/jpeg", 0.5);
+          const compressedData = canvas.toDataURL("image/jpeg", 0.4);
           const input = document.getElementById(targetInputId);
           if (input) {
             input.value = compressedData;
-            showToast("تم تحسين وضغط الصورة بنجاح.", "success");
+            showToast("تم تجهيز وضغط الصورة.", "success");
           }
         };
         img.onerror = () => showToast("تعذر فحص الصورة.", "error");
@@ -1610,9 +1558,6 @@
       reader.readAsDataURL(file);
     }
 
-    /* =========================================================
-       CATEGORIES
-    ========================================================= */
     function renderCategoryNav() {
       const container = document.getElementById("catNavList");
       if (!container) return;
@@ -1650,9 +1595,6 @@
       renderStoreProducts();
     }
 
-    /* =========================================================
-       BANNERS
-    ========================================================= */
     function renderBannersSlider() {
       const slider = document.getElementById("promoSlider");
       if (!slider) return;
@@ -1689,9 +1631,6 @@
       }
     }
 
-    /* =========================================================
-       PRODUCTS
-    ========================================================= */
     function renderStoreProducts() {
       const grid = document.getElementById("productsGrid");
       if (!grid) return;
@@ -1786,9 +1725,6 @@
       return span;
     }
 
-    /* =========================================================
-       SCALE MODAL
-    ========================================================= */
     function openScaleModal(prodId) {
       activeScaleProduct = products.find(p => p.id === prodId);
       if (!activeScaleProduct) return;
@@ -1860,15 +1796,11 @@
         note: document.getElementById("scaleItemNote").value.trim()
       });
 
-      saveLocalBackup();
       updateCartUI();
       closeModal("scaleModal");
       showToast("تمت إضافة الصنف إلى السلة.", "success");
     }
 
-    /* =========================================================
-       CART CALCULATIONS
-    ========================================================= */
     function getCartTotals() {
       const grossTotal = cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
       let discountAmount = 0;
@@ -2010,15 +1942,12 @@
       document.getElementById("pickupBranchSection").style.display = method === "pickup" ? "block" : "none";
     }
 
-    function removeCartItem(id) { cart = cart.filter(item => item.id !== id); saveLocalBackup(); updateCartUI(); openCartModal(); }
+    function removeCartItem(id) { cart = cart.filter(item => item.id !== id); updateCartUI(); openCartModal(); }
     function clearCartConfirm() {
       if (cart.length === 0) return;
-      if (confirm("هل تريد تفريغ محتويات السلة بالكامل؟")) { cart = []; saveLocalBackup(); updateCartUI(); openCartModal(); }
+      if (confirm("هل تريد تفريغ محتويات السلة بالكامل؟")) { cart = []; updateCartUI(); openCartModal(); }
     }
 
-    /* =========================================================
-       PHONE & ORDER ID
-    ========================================================= */
     function normalizePhone(phone) { return String(phone || "").replace(/[\s\-\(\)]/g, ""); }
     function isValidPhone(phone) { const clean = normalizePhone(phone); return /^\+?\d{8,15}$/.test(clean); }
 
@@ -2029,9 +1958,6 @@
       return datePart + "-" + random;
     }
 
-    /* =========================================================
-       WHATSAPP ORDER
-    ========================================================= */
     function sendWhatsAppOrder() {
       if (cart.length === 0) { showToast("سلة المشتريات فارغة.", "error"); return; }
 
@@ -2080,13 +2006,9 @@
       if (!whatsapp) { showToast("رقم واتساب المتجر غير مضبوط من الإعدادات.", "error"); return; }
 
       const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`;
-      localStorage.setItem("karachi_last_order", JSON.stringify({ orderId, customerName, phone, address, branch, orderMethod, payment, cart: clone(cart), totals, createdAt: new Date().toISOString() }));
       window.open(url, "_blank");
     }
 
-    /* =========================================================
-       PDF RECEIPT
-    ========================================================= */
     async function downloadReceiptPDF() {
       if (cart.length === 0) { showToast("السلة فارغة.", "error"); return; }
 
@@ -2142,9 +2064,6 @@
       } finally { element.style.display = "none"; }
     }
 
-    /* =========================================================
-       ADMIN LOGIN
-    ========================================================= */
     function handleSecretAdminClick() {
       secretClickCount++; clearTimeout(secretClickTimer);
       secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1500);
@@ -2171,9 +2090,6 @@
       if (storeConfig.maintenanceMode) document.getElementById("maintenanceOverlay").style.display = "flex";
     }
 
-    /* =========================================================
-       ADMIN PRODUCTS MANAGEMENT
-    ========================================================= */
     function renderAdminProducts() {
       const container = document.getElementById("adminCardsList");
       container.innerHTML = "";
@@ -2212,7 +2128,7 @@
       const target = index + direction;
       if (target < 0 || target >= products.length) return;
       const temp = products[index]; products[index] = products[target]; products[target] = temp;
-      saveLocalBackup(); renderAdminProducts(); renderStoreProducts(); await syncToCloud();
+      renderAdminProducts(); renderStoreProducts(); await syncToCloud();
     }
 
     function openProductModal(prodId = null) {
@@ -2255,20 +2171,17 @@
         products.unshift({ id: "prod_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), name, categoryId, priceKilo, img, badge, createdAt: Date.now() });
       }
 
-      saveLocalBackup(); renderAdminProducts(); renderCategoryNav(); renderStoreProducts();
-      closeModal("productModal"); showToast("تم حفظ الصنف بنجاح.", "success"); await syncToCloud();
+      renderAdminProducts(); renderCategoryNav(); renderStoreProducts();
+      closeModal("productModal"); await syncToCloud();
     }
 
     async function deleteProductAdmin(id) {
       const product = products.find(p => p.id === id); if (!product) return;
       if (!confirm(`هل أنت متأكد من حذف «${product.name}»؟`)) return;
       products = products.filter(p => p.id !== id); cart = cart.filter(item => item.productId !== id);
-      saveLocalBackup(); renderAdminProducts(); renderStoreProducts(); updateCartUI(); await syncToCloud(); showToast("تم حذف الصنف.", "success");
+      renderAdminProducts(); renderStoreProducts(); updateCartUI(); await syncToCloud(); showToast("تم حذف الصنف.", "success");
     }
 
-    /* =========================================================
-       ADMIN CATEGORIES
-    ========================================================= */
     function openAdminCategoriesModal() { renderAdminCategoryList(); document.getElementById("categoriesAdminModal").style.display = "flex"; }
 
     function renderAdminCategoryList() {
@@ -2290,7 +2203,7 @@
       const name = String(newName || "").trim();
       if (!name) { showToast("اسم القسم لا يمكن أن يكون فارغاً.", "error"); renderAdminCategoryList(); return; }
       storeConfig.categories[index].name = name;
-      saveLocalBackup(); renderAdminCategoryList(); renderCategoryNav(); renderStoreProducts(); await syncToCloud();
+      renderAdminCategoryList(); renderCategoryNav(); renderStoreProducts(); await syncToCloud();
     }
 
     async function deleteCat(index) {
@@ -2303,7 +2216,7 @@
       }
       storeConfig.categories.splice(index, 1);
       if (activeCategory === category.id) activeCategory = "all";
-      saveLocalBackup(); renderAdminCategoryList(); renderCategoryNav(); renderStoreProducts(); await syncToCloud();
+      renderAdminCategoryList(); renderCategoryNav(); renderStoreProducts(); await syncToCloud();
     }
 
     async function addNewAdminCategory() {
@@ -2311,12 +2224,9 @@
       if (!value) { showToast("اكتب اسم القسم أولاً.", "error"); return; }
       if (storeConfig.categories.some(c => c.name.trim().toLowerCase() === value.toLowerCase())) { showToast("هذا القسم موجود بالفعل.", "error"); return; }
       storeConfig.categories.push({ id: "cat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), name: value });
-      input.value = ""; saveLocalBackup(); renderAdminCategoryList(); renderCategoryNav(); await syncToCloud(); showToast("تمت إضافة القسم.", "success");
+      input.value = ""; renderAdminCategoryList(); renderCategoryNav(); await syncToCloud(); showToast("تمت إضافة القسم.", "success");
     }
 
-    /* =========================================================
-       SETTINGS & BRANCHES MANAGEMENT
-    ========================================================= */
     function openStoreSettings() {
       tempBranches = clone(storeConfig.branches || []);
       
@@ -2412,23 +2322,19 @@
 
       storeConfig.discount = { active: document.getElementById("setDiscountActive").checked, percent: discountPercent, label: document.getElementById("setDiscountLabel").value.trim() || "خصم" };
       storeConfig.maintenanceMode = document.getElementById("setMaintenanceMode").checked; storeConfig.whatsappNumber = whatsapp; storeConfig.adminPass = adminPass;
-      
       storeConfig.branches = tempBranches.filter(b => b.name.trim() !== "");
 
-      normalizeAllData(); saveLocalBackup(); applyThemeAndIdentity(); renderCategoryNav(); renderStoreProducts(); updateCartUI();
-      closeModal("settingsModal"); showToast("تم حفظ الإعدادات.", "success"); await syncToCloud();
+      normalizeAllData(); applyThemeAndIdentity(); renderCategoryNav(); renderStoreProducts(); updateCartUI();
+      closeModal("settingsModal"); await syncToCloud();
     }
 
-    /* =========================================================
-       BANNERS ADMIN
-    ========================================================= */
     function openBannersModal() {
       document.getElementById("setBannersActive").checked = !!storeConfig.banners.active;
       document.getElementById("tempBannerUpload").value = "";
       renderAdminBannersList(); document.getElementById("bannersModal").style.display = "flex";
     }
 
-    async function saveBannerActivation() { storeConfig.banners.active = document.getElementById("setBannersActive").checked; saveLocalBackup(); applyThemeAndIdentity(); await syncToCloud(); }
+    async function saveBannerActivation() { storeConfig.banners.active = document.getElementById("setBannersActive").checked; applyThemeAndIdentity(); await syncToCloud(); }
 
     function renderAdminBannersList() {
       const box = document.getElementById("adminBannersList"); box.innerHTML = "";
@@ -2449,19 +2355,16 @@
       if (!storeConfig.banners) storeConfig.banners = { active: true, items: [] };
       if (!Array.isArray(storeConfig.banners.items)) storeConfig.banners.items = [];
       storeConfig.banners.items.push(url); storeConfig.banners.active = true; document.getElementById("setBannersActive").checked = true;
-      input.value = ""; saveLocalBackup(); renderAdminBannersList(); applyThemeAndIdentity(); await syncToCloud(); showToast("تمت إضافة الإعلان.", "success");
+      input.value = ""; renderAdminBannersList(); applyThemeAndIdentity(); await syncToCloud(); showToast("تمت إضافة الإعلان.", "success");
     }
 
     async function deleteBannerItem(index) {
       if (!confirm("هل تريد حذف هذا الإعلان؟")) return;
       storeConfig.banners.items.splice(index, 1);
       if (storeConfig.banners.items.length === 0) storeConfig.banners.active = false;
-      saveLocalBackup(); renderAdminBannersList(); applyThemeAndIdentity(); await syncToCloud(); showToast("تم حذف الإعلان.", "success");
+      renderAdminBannersList(); applyThemeAndIdentity(); await syncToCloud(); showToast("تم حذف الإعلان.", "success");
     }
 
-    /* =========================================================
-       TOAST ALERTS & LISTENERS
-    ========================================================= */
     let toastTimer = null;
     function showToast(message, type = "") {
       const toast = document.getElementById("toast"); toast.innerText = message; toast.className = "toast show " + type;
@@ -2471,8 +2374,6 @@
     document.addEventListener("keydown", event => {
       if (event.key === "Escape") document.querySelectorAll(".modal-overlay").forEach(modal => { if (modal.id !== "maintenanceOverlay" || !storeConfig.maintenanceMode) modal.style.display = "none"; });
     });
-    
-    window.addEventListener("beforeunload", () => saveLocalBackup());
   </script>
 </body>
 </html>
