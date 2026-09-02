@@ -1218,10 +1218,10 @@
 
   <script>
     /* =========================================================
-       NEW CLOUD DATABASE CONFIG (JSONBIN.IO - FAST & RELIABLE)
+       CLOUD CONFIGURATION (YOUR LIVE JSONBIN ENDPOINT)
     ========================================================= */
-    const BIN_ID = "66504a7ee41b4d34e4f7a221"; 
-    const MASTER_KEY = "$2a$10$tZ8.aN6.mK7hH4yL5KxYe.2bV6jP6T9uB8cR5Z4m8xN7fJ9sW5aKu";
+    const BIN_ID = "6a9864bcda38895dfe309b31";
+    const MASTER_KEY = "$2a$10$NeCm6gPaFzwVt3Q9tpIT8.2THpdK4Dqwhh9l0Mt.j36CijWl6pE1O";
     const CLOUD_ENDPOINT = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&auto=format&fit=crop&q=60";
 
@@ -1271,6 +1271,9 @@
     let sliderTimer = null;
     let currentOrderId = null;
 
+    /* =========================================================
+       INITIALIZATION
+    ========================================================= */
     window.addEventListener("DOMContentLoaded", async () => {
       normalizeAllData();
       applyThemeAndIdentity();
@@ -1328,7 +1331,7 @@
     }
 
     /* =========================================================
-       CLOUD SYNC - FIXED (GUARANTEED CLOUD STORAGE)
+       CLOUD SYNC - FIXED VIA JSONBIN API
     ========================================================= */
     async function syncFromCloud() {
       setCloudStatus('<i class="fa-solid fa-spinner fa-spin"></i> جاري الاتصال بالسحابة...');
@@ -1357,7 +1360,7 @@
         setCloudStatus('<i class="fa-solid fa-cloud"></i> السحابة متصلة ومحدثة');
       } catch (error) {
         console.warn("Cloud read error:", error);
-        setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> خطأ في قراءة السحابة');
+        setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> خطأ في الاتصال بالسحابة');
       }
     }
 
@@ -1388,7 +1391,7 @@
       } catch (error) {
         console.error("Cloud write failed:", error);
         setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> فشل الحفظ في السحابة');
-        showToast("فشل الحفظ في السحابة! تحقق من الاتصال", "error");
+        showToast("فشل الحفظ في السحابة!", "error");
         return false;
       }
     }
@@ -1398,6 +1401,9 @@
       if (el) el.innerHTML = html;
     }
 
+    /* =========================================================
+       THEME & IDENTITY
+    ========================================================= */
     function applyThemeAndIdentity() {
       const root = document.documentElement;
       root.style.setProperty("--primary", storeConfig.themeColor || "#c25e00");
@@ -1455,11 +1461,14 @@
       return `rgba(${r},${g},${b},${alpha})`;
     }
 
+    /* =========================================================
+       DARK MODE
+    ========================================================= */
     function toggleDarkMode() {
       document.body.classList.toggle("dark-mode");
-      const active = document.body.classList.contains("dark-mode");
       const icon = document.getElementById("darkIcon");
-      if (icon) icon.className = active ? "fa-solid fa-sun" : "fa-solid fa-moon";
+      const isDark = document.body.classList.contains("dark-mode");
+      if (icon) icon.className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
     }
 
     function applySavedDarkMode() {
@@ -1467,6 +1476,9 @@
       if (icon) icon.className = "fa-solid fa-moon";
     }
 
+    /* =========================================================
+       MODALS
+    ========================================================= */
     function closeModal(id) {
       const el = document.getElementById(id);
       if (el) el.style.display = "none";
@@ -1478,6 +1490,9 @@
       }
     });
 
+    /* =========================================================
+       BUSINESS HOURS
+    ========================================================= */
     function checkBusinessHours() {
       if (storeConfig.maintenanceMode) return;
       const now = new Date();
@@ -1512,6 +1527,9 @@
       return h * 60 + m;
     }
 
+    /* =========================================================
+       IMAGE COMPRESSION
+    ========================================================= */
     function uploadBase64Image(event, targetInputId) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -1558,6 +1576,9 @@
       reader.readAsDataURL(file);
     }
 
+    /* =========================================================
+       CATEGORIES
+    ========================================================= */
     function renderCategoryNav() {
       const container = document.getElementById("catNavList");
       if (!container) return;
@@ -1595,6 +1616,9 @@
       renderStoreProducts();
     }
 
+    /* =========================================================
+       BANNERS
+    ========================================================= */
     function renderBannersSlider() {
       const slider = document.getElementById("promoSlider");
       if (!slider) return;
@@ -1631,6 +1655,9 @@
       }
     }
 
+    /* =========================================================
+       PRODUCTS
+    ========================================================= */
     function renderStoreProducts() {
       const grid = document.getElementById("productsGrid");
       if (!grid) return;
@@ -1725,6 +1752,9 @@
       return span;
     }
 
+    /* =========================================================
+       SCALE MODAL
+    ========================================================= */
     function openScaleModal(prodId) {
       activeScaleProduct = products.find(p => p.id === prodId);
       if (!activeScaleProduct) return;
@@ -1801,6 +1831,9 @@
       showToast("تمت إضافة الصنف إلى السلة.", "success");
     }
 
+    /* =========================================================
+       CART CALCULATIONS
+    ========================================================= */
     function getCartTotals() {
       const grossTotal = cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
       let discountAmount = 0;
@@ -1948,6 +1981,9 @@
       if (confirm("هل تريد تفريغ محتويات السلة بالكامل؟")) { cart = []; updateCartUI(); openCartModal(); }
     }
 
+    /* =========================================================
+       PHONE & ORDER ID
+    ========================================================= */
     function normalizePhone(phone) { return String(phone || "").replace(/[\s\-\(\)]/g, ""); }
     function isValidPhone(phone) { const clean = normalizePhone(phone); return /^\+?\d{8,15}$/.test(clean); }
 
@@ -1958,6 +1994,9 @@
       return datePart + "-" + random;
     }
 
+    /* =========================================================
+       WHATSAPP ORDER
+    ========================================================= */
     function sendWhatsAppOrder() {
       if (cart.length === 0) { showToast("سلة المشتريات فارغة.", "error"); return; }
 
@@ -2009,6 +2048,9 @@
       window.open(url, "_blank");
     }
 
+    /* =========================================================
+       PDF RECEIPT
+    ========================================================= */
     async function downloadReceiptPDF() {
       if (cart.length === 0) { showToast("السلة فارغة.", "error"); return; }
 
@@ -2064,6 +2106,9 @@
       } finally { element.style.display = "none"; }
     }
 
+    /* =========================================================
+       ADMIN LOGIN
+    ========================================================= */
     function handleSecretAdminClick() {
       secretClickCount++; clearTimeout(secretClickTimer);
       secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1500);
@@ -2090,6 +2135,9 @@
       if (storeConfig.maintenanceMode) document.getElementById("maintenanceOverlay").style.display = "flex";
     }
 
+    /* =========================================================
+       ADMIN PRODUCTS MANAGEMENT
+    ========================================================= */
     function renderAdminProducts() {
       const container = document.getElementById("adminCardsList");
       container.innerHTML = "";
@@ -2182,6 +2230,9 @@
       renderAdminProducts(); renderStoreProducts(); updateCartUI(); await syncToCloud(); showToast("تم حذف الصنف.", "success");
     }
 
+    /* =========================================================
+       ADMIN CATEGORIES
+    ========================================================= */
     function openAdminCategoriesModal() { renderAdminCategoryList(); document.getElementById("categoriesAdminModal").style.display = "flex"; }
 
     function renderAdminCategoryList() {
@@ -2227,6 +2278,9 @@
       input.value = ""; renderAdminCategoryList(); renderCategoryNav(); await syncToCloud(); showToast("تمت إضافة القسم.", "success");
     }
 
+    /* =========================================================
+       SETTINGS & BRANCHES MANAGEMENT
+    ========================================================= */
     function openStoreSettings() {
       tempBranches = clone(storeConfig.branches || []);
       
@@ -2328,6 +2382,9 @@
       closeModal("settingsModal"); await syncToCloud();
     }
 
+    /* =========================================================
+       BANNERS ADMIN
+    ========================================================= */
     function openBannersModal() {
       document.getElementById("setBannersActive").checked = !!storeConfig.banners.active;
       document.getElementById("tempBannerUpload").value = "";
@@ -2365,6 +2422,9 @@
       renderAdminBannersList(); applyThemeAndIdentity(); await syncToCloud(); showToast("تم حذف الإعلان.", "success");
     }
 
+    /* =========================================================
+       TOAST ALERTS & LISTENERS
+    ========================================================= */
     let toastTimer = null;
     function showToast(message, type = "") {
       const toast = document.getElementById("toast"); toast.innerText = message; toast.className = "toast show " + type;
