@@ -821,7 +821,7 @@
         <i class="fa-solid fa-folder-tree"></i> الأقسام
       </button>
       <button class="btn-scale" style="width:auto;padding:8px 14px;background:#0284c7" onclick="openStoreSettings()">
-        <i class="fa-solid fa-gear"></i> الإعدادات
+        <i class="fa-solid fa-gear"></i> الإعدادات والفروع
       </button>
       <button class="btn-scale" style="width:auto;padding:8px 14px;background:#475569" onclick="openBannersModal()">
         <i class="fa-solid fa-images"></i> الإعلانات
@@ -1050,6 +1050,15 @@
         </div>
       </div>
 
+      <!-- جديد: قسم إدارة الفروع -->
+      <div class="settings-section">
+        <h4><i class="fa-solid fa-location-dot"></i> إدارة الفروع وخريطة المتجر</h4>
+        <div id="adminBranchesList" style="margin-bottom:10px;display:flex;flex-direction:column;gap:10px;"></div>
+        <button class="btn-scale" style="width:auto;padding:6px 12px;font-size:.85rem;background:var(--success)" onclick="addNewAdminBranch()">
+          <i class="fa-solid fa-plus"></i> إضافة فرع جديد
+        </button>
+      </div>
+
       <div class="settings-section">
         <h4><i class="fa-regular fa-clock"></i> أوقات العمل</h4>
         <div style="display:flex;gap:8px">
@@ -1200,9 +1209,11 @@
   </div>
 
   <footer>
-    <div style="font-size:.85rem;font-weight:700;color:var(--text-muted)">
+    <div style="font-size:.85rem;font-weight:700;color:var(--text-muted);margin-bottom:12px;">
       © 2026 <span id="footerStoreName">كراتشي</span>.
     </div>
+    <!-- الروابط الخاصة بالفروع التي تظهر للزبائن في أسفل الصفحة -->
+    <div id="footerBranches" style="display:flex; justify-content:center; flex-wrap:wrap; gap:16px;"></div>
   </footer>
 
   <div id="toast" class="toast"></div>
@@ -1230,7 +1241,11 @@
         { id: "herbs", name: "أعشاب طبيعية" },
         { id: "nuts", name: "مكسرات ومسليات" }
       ],
-      branches: ["فرع قرقارش", "فرع أبو ستة"],
+      // تغيير تصميم الفروع لتشمل رابط خرائط جوجل
+      branches: [
+        { name: "فرع قرقارش", mapUrl: "" },
+        { name: "فرع أبو ستة", mapUrl: "" }
+      ],
       businessHours: { openTime: "10:00", closeTime: "20:00", closedDays: [5] },
       paymentDelivery: { delivery: true, pickup: true, cash: true, card: true, bank: true }
     };
@@ -1246,6 +1261,7 @@
     let storeConfig = safeJSONParse(localStorage.getItem("karachi_config"), DEFAULT_STORE_CONFIG);
     let products = safeJSONParse(localStorage.getItem("karachi_prods"), DEFAULT_PRODUCTS);
     let cart = safeJSONParse(localStorage.getItem("karachi_cart"), []);
+    let tempBranches = []; // مؤقت للفروع داخل الإعدادات
 
     let activeCategory = "all";
     let activeScaleProduct = null;
@@ -1303,7 +1319,11 @@
       };
 
       if (!Array.isArray(storeConfig.categories)) storeConfig.categories = clone(DEFAULT_STORE_CONFIG.categories);
-      if (!Array.isArray(storeConfig.branches)) storeConfig.branches = ["فرع قرقارش", "فرع أبو ستة"];
+      
+      // توافقية البيانات للفروع القديمة (نص عادي إلى كائن برابط الخريطة)
+      if (!Array.isArray(storeConfig.branches)) storeConfig.branches = clone(DEFAULT_STORE_CONFIG.branches);
+      storeConfig.branches = storeConfig.branches.map(b => typeof b === "string" ? { name: b, mapUrl: "" } : b);
+
       if (!Array.isArray(storeConfig.banners.items)) storeConfig.banners.items = [];
       if (!Array.isArray(storeConfig.businessHours.closedDays)) storeConfig.businessHours.closedDays = [];
 
@@ -1345,7 +1365,7 @@
     }
 
     /* =========================================================
-       CLOUD SYNC (CORS BYPASS APPLIED)
+       CLOUD SYNC (KVDB FIX)
     ========================================================= */
     async function syncFromCloud() {
       setCloudStatus('<i class="fa-solid fa-spinner fa-spin"></i> جاري المزامنة...');
@@ -1388,22 +1408,25 @@
       try {
         const payload = { version: 2, updatedAt: new Date().toISOString(), products: products, config: storeConfig };
         
-        // استخدام no-cors لتجاوز حظر المتصفح تماماً عند الإرسال
-        await fetch(CLOUD_ENDPOINT, {
+        // تعديل مهم: تم تغيير mode إلى cors واستخدام POST مع application/json لكي يدعمه KVDB بشكل سليم.
+        const response = await fetch(CLOUD_ENDPOINT, {
           method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain" },
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
 
-        // سيتم تجاوز رسائل الخطأ واعتماد الحفظ بنجاح فوراً
+        if (!response.ok) {
+           throw new Error("السحابة رفضت الطلب (ربما مساحة ممتلئة أو الرابط غير صحيح)");
+        }
+
         setCloudStatus('<i class="fa-solid fa-cloud"></i> تم الحفظ السحابي بنجاح');
         showToast("تم الحفظ بنجاح", "success");
         return true;
       } catch (error) {
         console.error("Cloud save failed:", error);
         setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> وضع عدم الاتصال - تم اعتماد النسخة المحلية');
-        showToast("حُفظ على الجهاز، وتعذر الوصول للسحابة.", "error");
+        showToast("حُفظ على الجهاز. السحابة لا تعمل حالياً.", "error");
         return false;
       }
     }
@@ -1435,6 +1458,30 @@
       overlay.style.display = storeConfig.maintenanceMode ? "flex" : "none";
 
       renderBannersSlider();
+      renderFooterBranches();
+    }
+
+    function renderFooterBranches() {
+      const container = document.getElementById("footerBranches");
+      if (!container) return;
+      container.innerHTML = "";
+      if(storeConfig.branches && storeConfig.branches.length > 0) {
+        storeConfig.branches.forEach(b => {
+          if (b.mapUrl && b.mapUrl.trim() !== "") {
+            container.innerHTML += `
+              <a href="${b.mapUrl}" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:800; font-size:.9rem; background:var(--primary-light); padding:6px 12px; border-radius:8px; border:1px solid var(--border);">
+                <i class="fa-solid fa-location-dot"></i> ${b.name}
+              </a>
+            `;
+          } else {
+            container.innerHTML += `
+              <span style="color:var(--text-muted); font-weight:800; font-size:.9rem; background:var(--bg); padding:6px 12px; border-radius:8px; border:1px solid var(--border);">
+                <i class="fa-solid fa-store"></i> ${b.name}
+              </span>
+            `;
+          }
+        });
+      }
     }
 
     function hexToRgba(hex, alpha) {
@@ -1539,7 +1586,8 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement("canvas");
-          const maxDim = 400; 
+          // تم تقليل الدقة للحفاظ على السحابة المجانية (الصور الكبيرة تدمر JSON)
+          const maxDim = 300; 
           let width = img.width;
           let height = img.height;
 
@@ -1557,7 +1605,8 @@
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, width, height);
 
-          const compressedData = canvas.toDataURL("image/jpeg", 0.55);
+          // الجودة 0.5 لتصغير حجم النص المستخرج لـ Base64
+          const compressedData = canvas.toDataURL("image/jpeg", 0.5);
           const input = document.getElementById(targetInputId);
           if (input) {
             input.value = compressedData;
@@ -1944,11 +1993,11 @@
 
       const branchSelect = document.getElementById("pickupBranchSelect");
       branchSelect.innerHTML = "";
-      const branches = Array.isArray(storeConfig.branches) ? storeConfig.branches : ["فرع قرقارش", "فرع أبو ستة"];
+      const branches = Array.isArray(storeConfig.branches) ? storeConfig.branches : [];
       branches.forEach(branch => {
         const option = document.createElement("option");
-        option.value = branch;
-        option.textContent = branch;
+        option.value = branch.name;
+        option.textContent = branch.name;
         branchSelect.appendChild(option);
       });
 
@@ -2275,9 +2324,11 @@
     }
 
     /* =========================================================
-       SETTINGS MANAGEMENT
+       SETTINGS & BRANCHES MANAGEMENT
     ========================================================= */
     function openStoreSettings() {
+      tempBranches = clone(storeConfig.branches || []);
+      
       document.getElementById("setStoreName").value = storeConfig.storeName || "";
       document.getElementById("setThemeColor").value = storeConfig.themeColor || "#c25e00";
       document.getElementById("setLogoUrl").value = storeConfig.logoUrl || "";
@@ -2301,7 +2352,42 @@
       document.getElementById("setWhatsapp").value = storeConfig.whatsappNumber || "";
       document.getElementById("setAdminPass").value = storeConfig.adminPass || "";
 
+      renderAdminBranches();
       document.getElementById("settingsModal").style.display = "flex";
+    }
+
+    function renderAdminBranches() {
+      const container = document.getElementById("adminBranchesList");
+      container.innerHTML = "";
+      if(tempBranches.length === 0){
+         container.innerHTML = '<div style="font-size:.8rem;color:var(--text-muted)">لا توجد فروع مضافة.</div>';
+         return;
+      }
+      tempBranches.forEach((b, index) => {
+        const div = document.createElement("div");
+        div.style.cssText = "border:1px solid var(--border); padding:10px; border-radius:8px; background:var(--card-bg);";
+        
+        div.innerHTML = `
+          <input type="text" class="order-input" style="margin-bottom:6px;font-weight:bold" placeholder="اسم الفرع (مثل: فرع قرقارش)" value="${b.name}" onchange="updateTempBranch(${index}, 'name', this.value)">
+          <input type="url" class="order-input" placeholder="رابط خرائط جوجل (اختياري)" value="${b.mapUrl || ''}" onchange="updateTempBranch(${index}, 'mapUrl', this.value)">
+          <button class="cart-del-btn" style="margin-top:6px;font-size:.8rem;font-weight:bold" onclick="removeTempBranch(${index})"><i class="fa-solid fa-trash"></i> حذف الفرع</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function updateTempBranch(index, field, value) {
+      if(tempBranches[index]) tempBranches[index][field] = value;
+    }
+    
+    function removeTempBranch(index) {
+      tempBranches.splice(index, 1);
+      renderAdminBranches();
+    }
+
+    function addNewAdminBranch() {
+      tempBranches.push({ name: "فرع جديد", mapUrl: "" });
+      renderAdminBranches();
     }
 
     async function saveStoreSettings() {
@@ -2335,6 +2421,9 @@
 
       storeConfig.discount = { active: document.getElementById("setDiscountActive").checked, percent: discountPercent, label: document.getElementById("setDiscountLabel").value.trim() || "خصم" };
       storeConfig.maintenanceMode = document.getElementById("setMaintenanceMode").checked; storeConfig.whatsappNumber = whatsapp; storeConfig.adminPass = adminPass;
+      
+      // حفظ الفروع المعدلة
+      storeConfig.branches = tempBranches.filter(b => b.name.trim() !== "");
 
       normalizeAllData(); saveLocalBackup(); applyThemeAndIdentity(); renderCategoryNav(); renderStoreProducts(); updateCartUI();
       closeModal("settingsModal"); showToast("تم حفظ الإعدادات.", "success"); await syncToCloud();
