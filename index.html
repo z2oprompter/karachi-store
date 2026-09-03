@@ -44,12 +44,10 @@
     button, input, select { font-family: inherit; }
     button { -webkit-appearance: none; cursor: pointer; }
 
-    /* Announcement */
     .announcement-bar { background: var(--primary); filter: brightness(.9); color: #fff; padding: 8px 0; font-size: .88rem; font-weight: 700; overflow: hidden; white-space: nowrap; }
     .marquee-content { display: inline-block; white-space: nowrap; animation: marqueeAnim 18s linear infinite; }
     @keyframes marqueeAnim { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
-    /* Header */
     header { background: var(--card-bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; padding: 12px 16px; box-shadow: var(--shadow); }
     .header-container { max-width: 1200px; margin: auto; display: flex; justify-content: space-between; align-items: center; }
     .logo-box { display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; }
@@ -62,13 +60,11 @@
 
     .container { max-width: 1200px; margin: auto; padding: 16px; }
 
-    /* Slider */
     .slider-container { position: relative; width: 100%; height: 165px; overflow: hidden; border-radius: var(--radius); margin: 12px 0; box-shadow: var(--shadow); background: #eee; display: none; }
     .slider-slide { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .6s ease; }
     .slider-slide.active { opacity: 1; z-index: 2; }
     .slider-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Search & Nav */
     .search-sort-bar { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 16px; }
     .search-box { position: relative; }
     .search-box input { width: 100%; padding: 12px 42px 12px 14px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: .95rem; outline: none; }
@@ -82,7 +78,6 @@
     .cat-pill.fav-pill { color: #e11d48; border-color: #fecdd3; background: #fff1f2; }
     .cat-pill.fav-pill.active { background: #e11d48; color: #fff; border-color: #e11d48; }
 
-    /* Products Grid */
     .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
     .product-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; position: relative; }
     .product-card.out-of-stock { opacity: 0.75; filter: grayscale(0.4); }
@@ -111,14 +106,12 @@
     .btn-scale:hover { filter: brightness(.88); }
     .btn-scale:disabled { cursor: not-allowed; background: #64748b; opacity: 1; }
 
-    /* Bottom Cart */
     .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100vw; background: var(--card-bg); border-top: 1px solid var(--border); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 40; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
     .bottom-bar-inner { max-width: 1200px; margin: auto; width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
     .cart-summary { display: flex; align-items: center; gap: 12px; }
     .cart-count-badge { background: var(--primary); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: .85rem; font-weight: 900; }
     .btn-checkout { background: var(--success); color: #fff; border: none; padding: 10px 22px; border-radius: 12px; font-size: .95rem; font-weight: 900; display: flex; align-items: center; gap: 8px; }
 
-    /* Modals */
     .modal-overlay { position: fixed; inset: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,.75); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px; }
     .modal-card { background: var(--card-bg); border-radius: 18px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 20px 16px; box-shadow: 0 20px 30px rgba(0,0,0,.4); position: relative; }
     .modal-close { position: absolute; top: 14px; left: 14px; background: var(--border); border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; color: var(--text-main); z-index: 10; display:flex; align-items:center; justify-content:center;}
@@ -148,7 +141,6 @@
     .progress-bar-bg { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 6px; }
     .progress-bar-fill { height: 100%; background: var(--success); transition: width 0.3s; }
 
-    /* Admin Cards */
     .admin-cards-container { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
     .admin-product-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
     .admin-card-top { display: flex; align-items: center; gap: 12px; }
@@ -164,7 +156,6 @@
     .settings-section { border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 14px; background: var(--bg); }
     .settings-section h4 { font-size: .85rem; color: var(--primary); margin-bottom: 10px; font-weight: 900; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
 
-    /* Social icons */
     .social-links { display: flex; justify-content: center; gap: 16px; margin-bottom: 16px; }
     .social-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border); font-size: 1.2rem; color: var(--text-main); text-decoration: none; transition: .2s; }
     .social-btn.facebook { color: #1877f2; }
@@ -194,7 +185,6 @@
 </head>
 <body>
 
-  <!-- ================= STATUS MODAL (Maintenance) ================= -->
   <div id="statusModal" class="modal-overlay" style="z-index:10000;background:var(--bg)">
     <div class="modal-card" style="text-align:center;box-shadow:none;background:transparent">
       <div id="statusIcon" style="font-size:3.5rem;margin-bottom:16px">🛠️</div>
@@ -206,12 +196,10 @@
     </div>
   </div>
 
-  <!-- Announcement -->
   <div id="announcementBar" class="announcement-bar">
     <div class="marquee-content" id="announcementText"></div>
   </div>
 
-  <!-- Header -->
   <header>
     <div class="header-container">
       <div class="logo-box" onclick="handleSecretAdminClick()">
@@ -227,7 +215,6 @@
     </div>
   </header>
 
-  <!-- ================= STORE VIEW ================= -->
   <main id="storeView" class="container">
     <div class="slider-container" id="promoSlider"></div>
     
@@ -248,7 +235,6 @@
     <div class="products-grid" id="productsGrid"></div>
   </main>
 
-  <!-- ================= ADMIN VIEW ================= -->
   <div id="adminView" class="container" style="display:none">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px">
       <h2 style="color:var(--primary);font-weight:900">لوحة التحكم</h2>
@@ -268,7 +254,6 @@
     <div class="admin-cards-container" id="adminCardsList"></div>
   </div>
 
-  <!-- ================= BOTTOM CART BAR ================= -->
   <div class="bottom-bar" id="storeBottomBar">
     <div class="bottom-bar-inner">
       <div class="cart-summary">
@@ -282,7 +267,7 @@
     </div>
   </div>
 
-  <!-- ================= SCALE MODAL ================= -->
+  <!-- Scale Modal -->
   <div class="modal-overlay" id="scaleModal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeModal('scaleModal')"><i class="fa-solid fa-xmark"></i></button>
@@ -295,7 +280,6 @@
       <p id="scaleItemSubtitle" style="font-size:.85rem;color:var(--text-muted)"></p>
       <div id="scaleStockNotice" style="font-size:.85rem;font-weight:800;color:var(--danger);margin-top:4px"></div>
 
-      <!-- Weight / Cash Toggle (Only for weight items) -->
       <div class="scale-toggle" id="scaleToggleContainer">
         <button id="toggleWeightMode" class="active" onclick="setScaleMode('weight')">بالوزن (جرام)</button>
         <button id="toggleCashMode" onclick="setScaleMode('cash')">بالمبلغ (دينار)</button>
@@ -324,7 +308,6 @@
 
       <div style="text-align:center;font-size:.95rem;font-weight:900;color:var(--success)" id="scaleCalculatedPrice">السعر: 0.00 د.ل</div>
 
-      <!-- Custom Grinding Options Per Product -->
       <div id="grindingOptionsBox" class="order-option-group" style="display:none;margin-top:16px">
         <label>خيارات التحضير المتوفرة:</label>
         <select id="scaleGrindingSelect" class="order-input"></select>
@@ -333,7 +316,6 @@
       <input type="text" id="scaleItemNote" class="order-input" style="margin-top:16px" placeholder="ملاحظة خاصة (مثال: تغليف منفصل)">
       <button class="btn-scale" style="margin-top:16px" onclick="addScaleItemToCart()"><i class="fa-solid fa-cart-plus"></i> إضافة للسلة</button>
       
-      <!-- Suggested Products -->
       <div id="suggestedProductsBox" style="display:none;margin-top:24px;border-top:1px solid var(--border);padding-top:16px">
         <h4 style="font-size:.85rem;color:var(--text-muted);margin-bottom:10px">قد يعجبك أيضاً:</h4>
         <div id="suggestedProductsList" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:10px"></div>
@@ -341,7 +323,7 @@
     </div>
   </div>
 
-  <!-- ================= CART MODAL ================= -->
+  <!-- Cart Modal -->
   <div class="modal-overlay" id="cartModal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeModal('cartModal')"><i class="fa-solid fa-xmark"></i></button>
@@ -351,7 +333,6 @@
         <button onclick="clearCartConfirm()" style="background:none;border:none;color:var(--danger);font-size:.8rem;font-weight:700">تفريغ</button>
       </div>
 
-      <!-- Free Delivery Progress -->
       <div id="freeDeliveryBox" style="display:none;margin-bottom:14px;background:var(--bg);padding:10px;border-radius:10px;border:1px solid var(--border)">
         <div style="display:flex;justify-content:space-between;font-size:.8rem;font-weight:800;margin-bottom:4px">
           <span id="freeDeliveryMsg" style="color:var(--primary)"></span>
@@ -362,7 +343,6 @@
 
       <div class="cart-items-list" id="cartItemsList"></div>
 
-      <!-- Discounts Summary -->
       <div id="cartBogoBox" class="discount-highlight" style="display:none">
         <div><i class="fa-solid fa-gift"></i> خصم العروض (BOGO)</div><div id="cartBogoValue"></div>
       </div>
@@ -374,7 +354,6 @@
         <span>الإجمالي المطلوب:</span><span id="cartFinalTotal" style="color:var(--primary)">0.00 د.ل</span>
       </div>
 
-      <!-- Min Order Warning -->
       <div id="minOrderWarning" style="display:none;color:var(--danger);font-size:.85rem;font-weight:800;text-align:center;margin-bottom:12px;background:#fef2f2;padding:8px;border-radius:8px"></div>
 
       <div id="checkoutFormArea">
@@ -411,7 +390,7 @@
     </div>
   </div>
 
-  <!-- ================= ADMIN PRODUCT MODAL ================= -->
+  <!-- Admin Modals -->
   <div class="modal-overlay" id="productModal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeModal('productModal')"><i class="fa-solid fa-xmark"></i></button>
@@ -449,9 +428,9 @@
       </div>
 
       <div class="order-option-group" style="background:#f1f5f9;padding:10px;border-radius:8px;border:1px solid var(--border)">
-        <label>رابط الصورة المباشر (ImgBB - خفيف ولا يملأ السحابة):</label>
+        <label>رابط الصورة المباشر (ImgBB):</label>
         <input type="url" id="adminProdImgUrl" class="order-input" placeholder="https://i.ibb.co/..." style="direction:ltr;text-align:left;margin-bottom:8px">
-        <div style="font-size:.75rem;color:var(--text-muted);font-weight:700">أو رفع صورة من الهاتف (تُضغط آلياً):</div>
+        <div style="font-size:.75rem;color:var(--text-muted);font-weight:700">أو رفع صورة من الهاتف:</div>
         <input type="file" id="adminProdFileInput" accept="image/*" class="order-input" style="padding:4px" onchange="uploadBase64Image(event,'adminProdImgUrl')">
       </div>
 
@@ -465,9 +444,8 @@
         </select>
       </div>
 
-      <!-- Specific Grinding Selection Per Product -->
       <div class="settings-section" style="margin-top:14px">
-        <h4 style="margin-bottom:6px">خيارات التحضير والطحن المتوفرة لهذا الصنف:</h4>
+        <h4 style="margin-bottom:6px">خيارات التحضير المتوفرة:</h4>
         <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:.85rem;font-weight:700">
           <label><input type="checkbox" id="chkGrindWhole"> حب كامل</label>
           <label><input type="checkbox" id="chkGrindFine"> مطحون ناعم</label>
@@ -478,10 +456,10 @@
       <div class="settings-section">
         <h4 style="margin-bottom:6px">خيارات التوفر والعروض:</h4>
         <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:700;font-size:.85rem">
-          <input type="checkbox" id="adminProdOutOfStock" style="width:16px;height:16px"> ❌ الصنف نفد مؤقتاً (إيقاف الطلب يدوياً)
+          <input type="checkbox" id="adminProdOutOfStock" style="width:16px;height:16px"> ❌ الصنف نفد مؤقتاً (إيقاف الطلب)
         </label>
         <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:.85rem;color:var(--success)">
-          <input type="checkbox" id="adminProdBogo" style="width:16px;height:16px"> 🎁 تفعيل عرض (اشتري 2 واحصل على 1 مجاناً)
+          <input type="checkbox" id="adminProdBogo" style="width:16px;height:16px"> 🎁 تفعيل عرض (2+1 مجاناً)
         </label>
       </div>
 
@@ -489,7 +467,6 @@
     </div>
   </div>
 
-  <!-- ================= ADMIN CATEGORIES ================= -->
   <div class="modal-overlay" id="categoriesAdminModal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeModal('categoriesAdminModal')"><i class="fa-solid fa-xmark"></i></button>
@@ -502,7 +479,6 @@
     </div>
   </div>
 
-  <!-- ================= ADMIN SETTINGS ================= -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeModal('settingsModal')"><i class="fa-solid fa-xmark"></i></button>
@@ -524,7 +500,6 @@
         <input type="url" id="setLogoUrl" class="order-input" placeholder="رابط الشعار المباشر" style="direction:ltr;text-align:left">
       </div>
 
-      <!-- Social Media Section -->
       <div class="settings-section">
         <h4><i class="fa-solid fa-share-nodes"></i> صفحات التواصل الاجتماعي</h4>
         <input type="url" id="setFbUrl" class="order-input" placeholder="رابط صفحة فيسبوك" style="direction:ltr;text-align:left;margin-bottom:6px">
@@ -540,22 +515,22 @@
         </div>
         <div style="background:#f0fdf4;padding:8px;border-radius:8px;border:1px solid #bbf7d0">
           <label style="color:#166534;font-weight:800;display:flex;align-items:center;gap:8px">
-            <input type="checkbox" id="setFreeDelivActive"> تفعيل شريط مؤشر التوصيل المجاني
+            <input type="checkbox" id="setFreeDelivActive"> تفعيل شريط التوصيل المجاني
           </label>
-          <input type="number" id="setFreeDelivTarget" class="order-input" placeholder="قيمة الطلب المطلوبة (مثال: 100)" style="margin-top:6px">
+          <input type="number" id="setFreeDelivTarget" class="order-input" placeholder="قيمة الطلب المطلوبة" style="margin-top:6px">
         </div>
       </div>
       
       <div class="settings-section">
-        <h4><i class="fa-solid fa-location-dot"></i> الفروع وروابط الخرائط</h4>
+        <h4><i class="fa-solid fa-location-dot"></i> الفروع</h4>
         <div id="adminBranchesList" style="margin-bottom:10px;display:flex;flex-direction:column;gap:10px;"></div>
         <button class="btn-scale" style="width:auto;padding:6px 12px;font-size:.85rem;background:var(--success)" onclick="addNewAdminBranch()"><i class="fa-solid fa-plus"></i> إضافة فرع</button>
       </div>
 
       <div class="settings-section">
-        <h4><i class="fa-solid fa-gear"></i> ميزات ترويجية إضافية</h4>
+        <h4><i class="fa-solid fa-gear"></i> ميزات ترويجية</h4>
         <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:.85rem;margin-bottom:8px">
-          <input type="checkbox" id="setSuggestActive"> تفعيل المنتجات المقترحة للزبون
+          <input type="checkbox" id="setSuggestActive"> تفعيل المنتجات المقترحة
         </label>
         <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:.85rem">
           <input type="checkbox" id="setPromoActive"> تفعيل كود الخصم العام
@@ -567,7 +542,7 @@
       </div>
 
       <div class="settings-section">
-        <h4><i class="fa-solid fa-wallet"></i> خيارات الدفع والاستلام</h4>
+        <h4><i class="fa-solid fa-wallet"></i> طرق الدفع والاستلام</h4>
         <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:.85rem;font-weight:700">
           <label><input type="checkbox" id="chkDelivery"> توصيل</label>
           <label><input type="checkbox" id="chkPickup"> استلام</label>
@@ -588,11 +563,10 @@
     </div>
   </div>
 
-  <!-- ================= BANNERS MODAL ================= -->
   <div class="modal-overlay" id="bannersModal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeModal('bannersModal')"><i class="fa-solid fa-xmark"></i></button>
-      <h3 style="font-weight:900;margin-bottom:14px">إدارة الإعلانات (البنرات)</h3>
+      <h3 style="font-weight:900;margin-bottom:14px">إدارة الإعلانات</h3>
       <label style="font-weight:800;margin-bottom:12px;display:block">
         <input type="checkbox" id="setBannersActive" onchange="saveBannerActivation()"> تشغيل شريط البنرات
       </label>
@@ -604,7 +578,7 @@
     </div>
   </div>
 
-  <!-- ================= PDF PRINT TEMPLATE ================= -->
+  <!-- PDF Print Area -->
   <div id="pdfPrintArea" style="display:none;width:700px;padding:25px;background:#fff;color:#111827;direction:rtl">
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #c25e00;padding-bottom:12px;margin-bottom:16px">
       <div>
@@ -632,7 +606,6 @@
     </div>
   </div>
 
-  <!-- Footer -->
   <footer>
     <div class="social-links" id="footerSocialLinks"></div>
     <div style="font-size:.85rem;font-weight:700;color:var(--text-muted);margin-bottom:12px;">© <span id="footerYear">2026</span> <span id="footerStoreName">كراتشي</span>. جميع الحقوق محفوظة.</div>
@@ -642,14 +615,13 @@
   <div id="toast" class="toast"></div>
 
   <script>
-    /* ================= CLOUD & DATA CONFIG ================= */
     const BIN_ID = "6a9864bcda38895dfe309b31";
     const MASTER_KEY = "$2a$10$NeCm6gPaFzwVt3Q9tpIT8.2THpdK4Dqwhh9l0Mt.j36CijWl6pE1O";
     const CLOUD_ENDPOINT = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&auto=format&fit=crop&q=60";
+    const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80";
 
     const DEFAULT_CONFIG = {
-      storeName: "كراتشي", logoUrl: "", themeColor: "#c25e00", announcement: "مرحباً بكم في متجرنا", whatsappNumber: "218922281994", adminPass: "1311",
+      storeName: "كراتشي", logoUrl: "", themeColor: "#c25e00", announcement: "مرحباً بكم في متجرنا | أجود التوابل والبهارات", whatsappNumber: "218922281994", adminPass: "1311",
       maintenanceMode: false, maintenanceMsg: "المتجر مغلق مؤقتاً للتطوير وسنعود لاستقبال طلباتكم قريباً بإذن الله.",
       minOrderValue: 20, suggestActive: true,
       freeDelivery: { active: true, target: 100 },
@@ -661,8 +633,13 @@
       paymentDelivery: { delivery: true, pickup: true, cash: true, card: true, bank: true }
     };
 
+    const DEFAULT_INITIAL_PRODUCTS = [
+      { id: "p1", name: "فلفل أسود فاخر", categoryId: "spices", sellType: "weight", price: 76, stock: 100, img: DEFAULT_IMAGE, badge: "popular", isOutOfStock: false, grindingOptions: ["حب كامل", "مطحون ناعم"], hasBogo: false, createdAt: Date.now() },
+      { id: "p2", name: "كركم هندي أصلي", categoryId: "spices", sellType: "weight", price: 38, stock: 80, img: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=800&auto=format&fit=crop&q=80", badge: "new", isOutOfStock: false, grindingOptions: ["مطحون ناعم"], hasBogo: true, createdAt: Date.now() }
+    ];
+
     let storeConfig = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
-    let products = [];
+    let products = JSON.parse(JSON.stringify(DEFAULT_INITIAL_PRODUCTS));
     let cart = [];
     let favorites = JSON.parse(localStorage.getItem('karachi_favs') || '[]');
     let tempBranches = [];
@@ -674,7 +651,6 @@
     let orderMethod = "delivery";
     let secretClicks = 0, secretTimer = null, sliderTimer = null, currentSlide = 0, currentOrderId = null;
 
-    /* ================= INIT & CLOUD SYNC ================= */
     window.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("footerYear").innerText = new Date().getFullYear();
       applyTheme(); renderCategoryNav(); updateCartUI(); loadCustomerInfo();
@@ -688,7 +664,14 @@
         const response = await fetch(`${CLOUD_ENDPOINT}/latest`, { headers: { "X-Master-Key": MASTER_KEY } });
         if (!response.ok) throw new Error();
         const data = await response.json(); const record = data.record || data;
-        if (record.products) products = record.products;
+        
+        if (record.products && Array.isArray(record.products) && record.products.length > 0) {
+          products = record.products;
+        } else {
+          // رفع المنتجات الافتراضية لأول مرة
+          await syncToCloud();
+        }
+
         if (record.config) storeConfig = { 
           ...DEFAULT_CONFIG, 
           ...record.config, 
@@ -699,7 +682,7 @@
         applyTheme(); renderCategoryNav(); renderStoreProducts(); checkStoreStatus();
         setCloudStatus('<i class="fa-solid fa-cloud"></i> متصل بالسحابة');
       } catch (e) {
-        setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> خطأ بالاتصال'); showToast("فشل الاتصال بالسحابة", "error");
+        setCloudStatus('<i class="fa-solid fa-cloud"></i> متصل محلياً');
       }
     }
 
@@ -708,11 +691,10 @@
       try {
         await fetch(CLOUD_ENDPOINT, { method: "PUT", headers: { "Content-Type": "application/json", "X-Master-Key": MASTER_KEY }, body: JSON.stringify({ products, config: storeConfig }) });
         setCloudStatus('<i class="fa-solid fa-cloud"></i> تم الحفظ بنجاح'); showToast("تم الحفظ بنجاح!", "success");
-      } catch (e) { setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> خطأ بالحفظ'); showToast("فشل الحفظ!", "error"); }
+      } catch (e) { setCloudStatus('<i class="fa-solid fa-triangle-exclamation"></i> خطأ بالحفظ'); showToast("فشل الحفظ السحابي!", "error"); }
     }
     function setCloudStatus(html) { const el = document.getElementById("cloudStatusIndicator"); if(el) el.innerHTML = html; }
 
-    /* ================= THEME & STATUS ================= */
     function applyTheme() {
       document.documentElement.style.setProperty("--primary", storeConfig.themeColor || "#c25e00");
       document.documentElement.style.setProperty("--primary-light", hexToRgba(storeConfig.themeColor || "#c25e00", .12));
@@ -757,7 +739,6 @@
       if(s.tiktok) c.innerHTML += `<a href="${s.tiktok}" target="_blank" class="social-btn tiktok"><i class="fa-brands fa-tiktok"></i></a>`;
     }
 
-    /* ================= CATEGORIES & PRODUCTS ================= */
     function renderCategoryNav() {
       const c = document.getElementById("catNavList"); c.innerHTML = `<button class="cat-pill ${activeCategory==='all'?'active':''}" onclick="setCategory('all')">الكل</button><button class="cat-pill fav-pill ${activeCategory==='favs'?'active':''}" onclick="setCategory('favs')">❤️ المفضلة</button>`;
       storeConfig.categories.forEach(cat => { c.innerHTML += `<button class="cat-pill ${activeCategory===cat.id?'active':''}" onclick="setCategory('${cat.id}')">${cat.name}</button>`; });
@@ -847,7 +828,6 @@
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    /* ================= SCALE / ITEM MODAL ================= */
     function openScaleModal(id) {
       activeScaleProduct = products.find(p => p.id === id); if(!activeScaleProduct) return;
       if(activeScaleProduct.isOutOfStock || (activeScaleProduct.stock !== undefined && activeScaleProduct.stock <= 0)) return;
@@ -872,7 +852,6 @@
         setScaleMode('weight');
       }
       
-      // Custom Grinding Options Per Product
       const grindBox = document.getElementById("grindingOptionsBox");
       const grindSel = document.getElementById("scaleGrindingSelect");
       grindSel.innerHTML = "";
@@ -948,7 +927,6 @@
       else if(scaleMode === 'weight') { finalGramsOrQty = currentScaleVal; finalPrice = (finalGramsOrQty/1000) * basePrice; }
       else { finalPrice = currentScaleVal; finalGramsOrQty = Math.round((finalPrice/basePrice)*1000); }
 
-      // Stock Check
       if(activeScaleProduct.stock !== undefined) {
         let reqKgOrUnits = activeScaleProduct.sellType === 'unit' ? finalGramsOrQty : (finalGramsOrQty / 1000);
         let existingInCart = cart.filter(i => i.productId === activeScaleProduct.id).reduce((sum, i) => sum + (i.type === 'unit' ? i.qty : i.qty / 1000), 0);
@@ -989,7 +967,6 @@
       });
     }
 
-    /* ================= CART & CHECKOUT ================= */
     function getCartTotals() {
       let gross = 0, bogoDiscount = 0, promoDiscount = 0;
       cart.forEach(item => {
@@ -1020,7 +997,6 @@
       
       document.getElementById("cartFinalTotal").innerText = `${t.net.toFixed(2)} د.ل`;
       
-      // Free Delivery Progress
       const fdBox = document.getElementById("freeDeliveryBox");
       if(storeConfig.freeDelivery.active && t.net > 0) {
         fdBox.style.display = "block";
@@ -1031,7 +1007,6 @@
         else { document.getElementById("freeDeliveryMsg").innerText = "أضف المزيد لتوصيل مجاني"; document.getElementById("freeDeliveryVal").innerText = `باقي ${(target-t.net).toFixed(2)} د.ل`; }
       } else { fdBox.style.display = "none"; }
 
-      // Min Order
       const minWarning = document.getElementById("minOrderWarning"), formArea = document.getElementById("checkoutFormArea");
       if(t.net > 0 && t.net < storeConfig.minOrderValue) {
         minWarning.innerText = `الحد الأدنى للطلب هو ${storeConfig.minOrderValue} د.ل`;
@@ -1083,7 +1058,6 @@
       document.getElementById("pickupBranchSection").style.display = m==='pickup'?'block':'none';
     }
 
-    /* Customer Info & Checkout */
     function loadCustomerInfo() {
       const info = JSON.parse(localStorage.getItem('karachi_cust') || '{}');
       if(info.name) document.getElementById("orderCustomerName").value = info.name;
@@ -1156,7 +1130,6 @@
       catch(e) { showToast("تعذر إنشاء الفاتورة", "error"); } finally { el.style.display = "none"; }
     }
 
-    /* ================= ADMIN ================= */
     function handleSecretAdminClick() {
       secretClicks++; clearTimeout(secretTimer);
       secretTimer = setTimeout(()=>secretClicks=0, 1500);
@@ -1245,7 +1218,7 @@
 
       const newProd = { 
         id: id||("p_"+Date.now()), name, categoryId, sellType, price, stock,
-        img: document.getElementById("adminProdImgUrl").value.trim(), 
+        img: document.getElementById("adminProdImgUrl").value.trim() || DEFAULT_IMAGE, 
         badge: document.getElementById("adminProdBadgeSelect").value, 
         isOutOfStock: document.getElementById("adminProdOutOfStock").checked, 
         grindingOptions,
@@ -1266,14 +1239,13 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement("canvas"); let w=img.width, h=img.height;
-          if(w>300||h>300) { if(w>h){h=Math.round((h*300)/w); w=300;} else {w=Math.round((w*300)/h); h=300;} }
+          if(w>400||h>400) { if(w>h){h=Math.round((h*400)/w); w=400;} else {w=Math.round((w*400)/h); h=400;} }
           canvas.width=w; canvas.height=h; const ctx=canvas.getContext("2d"); ctx.drawImage(img,0,0,w,h);
-          document.getElementById(targetId).value = canvas.toDataURL("image/jpeg", 0.5); showToast("تم ضغط الصورة", "success");
+          document.getElementById(targetId).value = canvas.toDataURL("image/jpeg", 0.65); showToast("تمت معالجة الصورة", "success");
         }; img.src = e.target.result;
       }; reader.readAsDataURL(file);
     }
 
-    /* Admin Settings */
     function openStoreSettings() {
       tempBranches = JSON.parse(JSON.stringify(storeConfig.branches||[]));
       document.getElementById("setMaintenanceMode").checked = !!storeConfig.maintenanceMode;
@@ -1342,7 +1314,6 @@
       applyTheme(); closeModal("settingsModal"); checkStoreStatus(); await syncToCloud();
     }
 
-    /* Admin Categories */
     function openAdminCategoriesModal() { renderAdminCatList(); document.getElementById("categoriesAdminModal").style.display="flex"; }
     function renderAdminCatList() {
       const c = document.getElementById("adminCatList"); c.innerHTML="";
@@ -1360,7 +1331,6 @@
     }
     async function delAdminCat(i) { storeConfig.categories.splice(i,1); renderAdminCatList(); await syncToCloud(); }
 
-    /* Admin Banners */
     function openBannersModal() { document.getElementById("setBannersActive").checked = !!storeConfig.banners.active; renderAdminBannersList(); document.getElementById("bannersModal").style.display="flex"; }
     async function saveBannerActivation() { storeConfig.banners.active = document.getElementById("setBannersActive").checked; renderBannersSlider(); await syncToCloud(); }
     function renderAdminBannersList() {
@@ -1391,13 +1361,11 @@
       }
     }
 
-    /* Backup */
     function downloadBackup() {
       const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({products, config: storeConfig}, null, 2));
       const a = document.createElement('a'); a.href = data; a.download = `karachi_backup_${Date.now()}.json`; a.click();
     }
 
-    /* Utils */
     let toastTimer;
     function showToast(msg, type="") {
       const t = document.getElementById("toast"); t.innerText = msg; t.className = "toast show " + type;
