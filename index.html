@@ -61,7 +61,7 @@
     .container { max-width: 1200px; margin: auto; padding: 16px; }
 
     .slider-container { position: relative; width: 100%; height: 165px; overflow: hidden; border-radius: var(--radius); margin: 12px 0; box-shadow: var(--shadow); background: #eee; display: none; }
-    .slider-slide { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .6s ease; }
+    .slider-slide { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .6s ease; cursor: pointer; }
     .slider-slide.active { opacity: 1; z-index: 2; }
     .slider-slide img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -81,7 +81,7 @@
     .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
     .product-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; position: relative; }
     .product-card.out-of-stock { opacity: 0.75; filter: grayscale(0.4); }
-    .product-img-box { width: 100%; height: 170px; background: #f1f5f9; position: relative; overflow: hidden; }
+    .product-img-box { width: 100%; height: 170px; background: #f1f5f9; position: relative; overflow: hidden; cursor: pointer; }
     .product-img-box img { width: 100%; height: 100%; object-fit: cover; }
     
     .fav-btn { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.9); border: none; width: 32px; height: 32px; border-radius: 50%; color: #cbd5e1; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
@@ -185,12 +185,22 @@
 </head>
 <body>
 
+  <!-- نافذة تكبير الصورة (Lightbox) -->
+  <div id="imageLightboxModal" class="modal-overlay" onclick="closeModal('imageLightboxModal')">
+    <div style="position:relative;max-width:90%;max-height:85vh;">
+      <button class="modal-close" style="top:-15px;right:-15px;left:auto;" onclick="closeModal('imageLightboxModal')"><i class="fa-solid fa-xmark"></i></button>
+      <img id="lightboxImg" src="" style="width:100%;max-height:80vh;object-fit:contain;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+      <div id="lightboxTitle" style="color:#fff;text-align:center;font-weight:bold;margin-top:10px;font-size:1.1rem;"></div>
+    </div>
+  </div>
+
   <div id="statusModal" class="modal-overlay" style="z-index:10000;background:var(--bg)">
     <div class="modal-card" style="text-align:center;box-shadow:none;background:transparent">
       <div id="statusIcon" style="font-size:3.5rem;margin-bottom:16px">🛠️</div>
       <h2 id="statusTitle" style="font-weight:900;color:var(--primary);margin-bottom:8px">المتجر قيد الصيانة</h2>
       <p id="statusMessage" style="color:var(--text-muted);font-weight:700;margin-bottom:20px"></p>
       <div style="display:flex;gap:10px;justify-content:center">
+        <button id="btnBrowseStore" class="btn-step" style="width:auto;padding:0 20px;font-size:.85rem;display:none;" onclick="closeModal('statusModal')">تصفح المتجر</button>
         <button class="btn-step" style="width:auto;padding:0 20px;font-size:.85rem;background:#475569" onclick="adminLogin()">الإدارة</button>
       </div>
     </div>
@@ -428,7 +438,7 @@
       </div>
 
       <div class="order-option-group" style="background:#f1f5f9;padding:10px;border-radius:8px;border:1px solid var(--border)">
-        <label>رابط الصورة المباشر (ImgBB):</label>
+        <label>رابط الصورة المباشر (ImgBB / Unsplash):</label>
         <input type="url" id="adminProdImgUrl" class="order-input" placeholder="https://i.ibb.co/..." style="direction:ltr;text-align:left;margin-bottom:8px">
         <div style="font-size:.75rem;color:var(--text-muted);font-weight:700">أو رفع صورة من الهاتف:</div>
         <input type="file" id="adminProdFileInput" accept="image/*" class="order-input" style="padding:4px" onchange="uploadBase64Image(event,'adminProdImgUrl')">
@@ -490,6 +500,36 @@
           <input type="checkbox" id="setMaintenanceMode" style="width:18px;height:18px"> إغلاق المتجر أمام الزبائن مؤقتاً
         </label>
         <input type="text" id="setMaintenanceMsg" class="order-input" placeholder="رسالة الإغلاق التي تظهر للزبائن" style="margin-top:8px">
+      </div>
+
+      <!-- قسم أوقات العمل والأيام الجديد والمطور -->
+      <div class="settings-section">
+        <h4><i class="fa-regular fa-clock"></i> أوقات العمل والعطلات</h4>
+        <label style="display:flex;align-items:center;gap:8px;font-weight:800;margin-bottom:8px">
+          <input type="checkbox" id="setHoursActive" style="width:16px;height:16px"> تفعيل جدول أوقات العمل التلقائي
+        </label>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <div style="flex:1">
+            <span style="font-size:.75rem;font-weight:700">ساعة الفتح:</span>
+            <input type="time" id="setOpenTime" class="order-input">
+          </div>
+          <div style="flex:1">
+            <span style="font-size:.75rem;font-weight:700">ساعة الإغلاق:</span>
+            <input type="time" id="setCloseTime" class="order-input">
+          </div>
+        </div>
+        <div>
+          <span style="font-size:.75rem;font-weight:800;display:block;margin-bottom:6px">أيام العطلة الرسمية:</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:.8rem;font-weight:700">
+            <label><input type="checkbox" name="closedDayCheck" value="5"> الجمعة</label>
+            <label><input type="checkbox" name="closedDayCheck" value="6"> السبت</label>
+            <label><input type="checkbox" name="closedDayCheck" value="0"> الأحد</label>
+            <label><input type="checkbox" name="closedDayCheck" value="1"> الإثنين</label>
+            <label><input type="checkbox" name="closedDayCheck" value="2"> الثلاثاء</label>
+            <label><input type="checkbox" name="closedDayCheck" value="3"> الأربعاء</label>
+            <label><input type="checkbox" name="closedDayCheck" value="4"> الخميس</label>
+          </div>
+        </div>
       </div>
 
       <div class="settings-section">
@@ -570,9 +610,12 @@
       <label style="font-weight:800;margin-bottom:12px;display:block">
         <input type="checkbox" id="setBannersActive" onchange="saveBannerActivation()"> تشغيل شريط البنرات
       </label>
-      <div style="display:flex;gap:8px;margin-bottom:14px">
-        <input type="url" id="tempBannerUpload" class="order-input" placeholder="رابط مباشر للصورة (ImgBB)" style="direction:ltr;text-align:left">
-        <button class="btn-scale" style="width:auto;padding:0 16px" onclick="addNewBanner()"><i class="fa-solid fa-plus"></i></button>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;border:1px solid var(--border);padding:10px;border-radius:8px;">
+        <input type="url" id="tempBannerUpload" class="order-input" placeholder="رابط مباشر للصورة (ImgBB / Unsplash)" style="direction:ltr;text-align:left">
+        <select id="tempBannerLinkedProd" class="order-input">
+          <option value="">-- بدون ربط بمنتج (صورة فقط) --</option>
+        </select>
+        <button class="btn-scale" style="padding:8px" onclick="addNewBanner()"><i class="fa-solid fa-plus"></i> إضافة الإعلان</button>
       </div>
       <div id="adminBannersList" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
@@ -623,12 +666,13 @@
     const DEFAULT_CONFIG = {
       storeName: "كراتشي", logoUrl: "", themeColor: "#c25e00", announcement: "مرحباً بكم في متجرنا | أجود التوابل والبهارات", whatsappNumber: "218922281994", adminPass: "1311",
       maintenanceMode: false, maintenanceMsg: "المتجر مغلق مؤقتاً للتطوير وسنعود لاستقبال طلباتكم قريباً بإذن الله.",
+      businessHours: { active: false, openTime: "10:00", closeTime: "20:00", closedDays: [5] },
       minOrderValue: 20, suggestActive: true,
       freeDelivery: { active: true, target: 100 },
       promo: { active: false, percent: 10, label: "خصم خاص" },
       banners: { active: false, items: [] },
       categories: [ { id: "spices", name: "توابل وبهارات" }, { id: "canned", name: "معلبات وزيوت" }, { id: "nuts", name: "مكسرات" } ],
-      branches: [ { name: "الفرع الرئيسي", mapUrl: "" } ],
+      branches: [ { name: "فرع قرقارش", mapUrl: "" }, { name: "فرع أبو ستة", mapUrl: "" } ],
       social: { facebook: "", instagram: "", tiktok: "" },
       paymentDelivery: { delivery: true, pickup: true, cash: true, card: true, bank: true }
     };
@@ -667,14 +711,12 @@
         
         if (record.products && Array.isArray(record.products) && record.products.length > 0) {
           products = record.products;
-        } else {
-          // رفع المنتجات الافتراضية لأول مرة
-          await syncToCloud();
         }
 
         if (record.config) storeConfig = { 
           ...DEFAULT_CONFIG, 
           ...record.config, 
+          businessHours: { ...DEFAULT_CONFIG.businessHours, ...(record.config.businessHours||{}) },
           freeDelivery: { ...DEFAULT_CONFIG.freeDelivery, ...(record.config.freeDelivery||{}) }, 
           promo: { ...DEFAULT_CONFIG.promo, ...(record.config.promo||{}) },
           social: { ...DEFAULT_CONFIG.social, ...(record.config.social||{}) }
@@ -713,14 +755,53 @@
     
     function toggleDarkMode() { document.body.classList.toggle("dark-mode"); document.getElementById("darkIcon").className = document.body.classList.contains("dark-mode") ? "fa-solid fa-sun" : "fa-solid fa-moon"; }
 
+    // فحص ساعات العمل والصيانة
     function checkStoreStatus() {
-      if(storeConfig.maintenanceMode) {
-        document.getElementById("statusTitle").innerText = "المتجر قيد الصيانة";
-        document.getElementById("statusMessage").innerText = storeConfig.maintenanceMsg || "نعمل على تحديث المتجر وسنعود قريباً بإذن الله.";
-        document.getElementById("statusModal").style.display = "flex";
-      } else {
-        document.getElementById("statusModal").style.display = "none";
+      const modal = document.getElementById("statusModal");
+      const title = document.getElementById("statusTitle");
+      const msg = document.getElementById("statusMessage");
+      const icon = document.getElementById("statusIcon");
+      const btnBrowse = document.getElementById("btnBrowseStore");
+
+      if (storeConfig.maintenanceMode) {
+        icon.innerText = "🛠️";
+        title.innerText = "المتجر قيد الصيانة";
+        msg.innerText = storeConfig.maintenanceMsg || "نعمل على تحديث المتجر وسنعود قريباً بإذن الله.";
+        btnBrowse.style.display = "none";
+        modal.style.display = "flex";
+        return;
       }
+
+      const bh = storeConfig.businessHours;
+      if (bh && bh.active) {
+        const now = new Date();
+        const day = now.getDay();
+        const curMins = now.getHours() * 60 + now.getMinutes();
+        
+        const openParts = (bh.openTime || "10:00").split(":");
+        const closeParts = (bh.closeTime || "20:00").split(":");
+        const openMins = parseInt(openParts[0]) * 60 + parseInt(openParts[1]);
+        const closeMins = parseInt(closeParts[0]) * 60 + parseInt(closeParts[1]);
+
+        let isOpen = true;
+        if (Array.isArray(bh.closedDays) && bh.closedDays.includes(day)) isOpen = false;
+        else if (openMins < closeMins) {
+          if (curMins < openMins || curMins >= closeMins) isOpen = false;
+        } else {
+          if (curMins < openMins && curMins >= closeMins) isOpen = false;
+        }
+
+        if (!isOpen && !sessionStorage.getItem("hours_alert_dismissed")) {
+          icon.innerText = "🌙";
+          title.innerText = "المتجر مغلق حالياً";
+          msg.innerText = `أوقات العمل اليومية: من ${bh.openTime} إلى ${bh.closeTime}. يمكنك تجهيز سلتك وتصفح المنتجات وسيتم استلام طلبك فور الفتح.`;
+          btnBrowse.style.display = "block";
+          modal.style.display = "flex";
+          return;
+        }
+      }
+
+      modal.style.display = "none";
     }
 
     function renderFooterBranches() {
@@ -787,11 +868,11 @@
 
         grid.innerHTML += `
           <div class="product-card ${isOutOfStock ? 'out-of-stock' : ''}">
-            <div class="product-img-box">
+            <div class="product-img-box" onclick="openLightbox('${p.img || DEFAULT_IMAGE}', '${p.name}')">
               <img src="${p.img || DEFAULT_IMAGE}" loading="lazy" alt="${p.name}">
               ${badgeHtml}
-              <button class="fav-btn ${isFav?'active':''}" onclick="toggleFav('${p.id}', this)"><i class="fa-solid fa-heart"></i></button>
-              <button class="share-btn" onclick="shareProduct('${p.id}')"><i class="fa-solid fa-share-nodes"></i></button>
+              <button class="fav-btn ${isFav?'active':''}" onclick="event.stopPropagation(); toggleFav('${p.id}', this)"><i class="fa-solid fa-heart"></i></button>
+              <button class="share-btn" onclick="event.stopPropagation(); shareProduct('${p.id}')"><i class="fa-solid fa-share-nodes"></i></button>
             </div>
             <div class="product-body">
               <div class="product-title">${p.name}</div>
@@ -807,6 +888,13 @@
           </div>
         `;
       });
+    }
+
+    // تكبير الصورة بجودة أصلية
+    function openLightbox(src, title) {
+      document.getElementById("lightboxImg").src = src;
+      document.getElementById("lightboxTitle").innerText = title || "";
+      document.getElementById("imageLightboxModal").style.display = "flex";
     }
 
     function toggleFav(id, btn) {
@@ -1250,6 +1338,16 @@
       tempBranches = JSON.parse(JSON.stringify(storeConfig.branches||[]));
       document.getElementById("setMaintenanceMode").checked = !!storeConfig.maintenanceMode;
       document.getElementById("setMaintenanceMsg").value = storeConfig.maintenanceMsg || "";
+      
+      const bh = storeConfig.businessHours || {};
+      document.getElementById("setHoursActive").checked = !!bh.active;
+      document.getElementById("setOpenTime").value = bh.openTime || "10:00";
+      document.getElementById("setCloseTime").value = bh.closeTime || "20:00";
+      const closedDays = Array.isArray(bh.closedDays) ? bh.closedDays : [5];
+      document.querySelectorAll("input[name='closedDayCheck']").forEach(chk => {
+        chk.checked = closedDays.includes(parseInt(chk.value));
+      });
+
       document.getElementById("setStoreName").value = storeConfig.storeName;
       document.getElementById("setThemeColor").value = storeConfig.themeColor;
       document.getElementById("setAnnouncement").value = storeConfig.announcement;
@@ -1291,6 +1389,18 @@
       if(!document.getElementById("chkDelivery").checked && !document.getElementById("chkPickup").checked) return showToast("فعل طريقة استلام واحدة على الأقل", "error");
       storeConfig.maintenanceMode = document.getElementById("setMaintenanceMode").checked;
       storeConfig.maintenanceMsg = document.getElementById("setMaintenanceMsg").value.trim();
+
+      const selectedClosedDays = [];
+      document.querySelectorAll("input[name='closedDayCheck']:checked").forEach(chk => {
+        selectedClosedDays.push(parseInt(chk.value));
+      });
+      storeConfig.businessHours = {
+        active: document.getElementById("setHoursActive").checked,
+        openTime: document.getElementById("setOpenTime").value || "10:00",
+        closeTime: document.getElementById("setCloseTime").value || "20:00",
+        closedDays: selectedClosedDays
+      };
+
       storeConfig.storeName = document.getElementById("setStoreName").value.trim() || "كراتشي";
       storeConfig.themeColor = document.getElementById("setThemeColor").value;
       storeConfig.announcement = document.getElementById("setAnnouncement").value;
@@ -1331,28 +1441,52 @@
     }
     async function delAdminCat(i) { storeConfig.categories.splice(i,1); renderAdminCatList(); await syncToCloud(); }
 
-    function openBannersModal() { document.getElementById("setBannersActive").checked = !!storeConfig.banners.active; renderAdminBannersList(); document.getElementById("bannersModal").style.display="flex"; }
+    function openBannersModal() {
+      document.getElementById("setBannersActive").checked = !!storeConfig.banners.active;
+      const linkedSel = document.getElementById("tempBannerLinkedProd");
+      linkedSel.innerHTML = '<option value="">-- بدون ربط بمنتج (صورة فقط) --</option>';
+      products.forEach(p => linkedSel.add(new Option(p.name, p.id)));
+      renderAdminBannersList();
+      document.getElementById("bannersModal").style.display="flex";
+    }
+
     async function saveBannerActivation() { storeConfig.banners.active = document.getElementById("setBannersActive").checked; renderBannersSlider(); await syncToCloud(); }
+    
     function renderAdminBannersList() {
       const c = document.getElementById("adminBannersList"); c.innerHTML="";
-      (storeConfig.banners.items||[]).forEach((url, i) => {
+      (storeConfig.banners.items||[]).forEach((item, i) => {
+        const url = typeof item === 'object' ? item.url : item;
+        const pId = typeof item === 'object' ? item.productId : "";
+        const prod = products.find(x => x.id === pId);
         c.innerHTML += `<div style="display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);padding:6px;border-radius:8px">
-          <img src="${url}" style="width:100px;height:55px;object-fit:cover;border-radius:6px">
+          <img src="${url}" style="width:80px;height:45px;object-fit:cover;border-radius:6px">
+          <div style="font-size:.75rem;color:var(--text-muted);">${prod ? 'مرتبط بـ: ' + prod.name : 'بدون ربط'}</div>
           <button class="cart-del-btn" onclick="storeConfig.banners.items.splice(${i},1);renderAdminBannersList();syncToCloud()">حذف</button>
         </div>`;
       });
     }
+
     async function addNewBanner() {
       const url = document.getElementById("tempBannerUpload").value.trim(); if(!url) return;
+      const linkedProd = document.getElementById("tempBannerLinkedProd").value;
       if(!storeConfig.banners.items) storeConfig.banners.items=[];
-      storeConfig.banners.items.push(url); storeConfig.banners.active = true; document.getElementById("setBannersActive").checked = true;
-      document.getElementById("tempBannerUpload").value=""; renderAdminBannersList(); renderBannersSlider(); await syncToCloud();
+      storeConfig.banners.items.push({ url: url, productId: linkedProd });
+      storeConfig.banners.active = true;
+      document.getElementById("setBannersActive").checked = true;
+      document.getElementById("tempBannerUpload").value="";
+      renderAdminBannersList(); renderBannersSlider(); await syncToCloud();
     }
+
     function renderBannersSlider() {
       const s = document.getElementById("promoSlider"); s.innerHTML = ""; clearInterval(sliderTimer);
       if(!storeConfig.banners.active || !storeConfig.banners.items || storeConfig.banners.items.length===0) { s.style.display="none"; return; }
       s.style.display="block";
-      storeConfig.banners.items.forEach((url, i) => s.innerHTML += `<div class="slider-slide ${i===0?'active':''}"><img src="${url}"></div>`);
+      storeConfig.banners.items.forEach((item, i) => {
+        const url = typeof item === 'object' ? item.url : item;
+        const pId = typeof item === 'object' ? item.productId : "";
+        const clickAction = pId ? `onclick="openScaleModal('${pId}')"` : "";
+        s.innerHTML += `<div class="slider-slide ${i===0?'active':''}" ${clickAction}><img src="${url}"></div>`;
+      });
       if(storeConfig.banners.items.length>1) {
         currentSlide=0; sliderTimer = setInterval(()=>{
           const slides = document.querySelectorAll(".slider-slide"); if(!slides.length) return;
