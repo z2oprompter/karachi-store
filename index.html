@@ -141,6 +141,9 @@
     .progress-bar-bg { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 6px; }
     .progress-bar-fill { height: 100%; background: var(--success); transition: width 0.3s; }
 
+    .notice-box { background: #fffbeb; color: #b45309; border: 1px solid #fef3c7; padding: 10px; border-radius: 10px; font-size: .82rem; font-weight: 700; margin-bottom: 12px; line-height: 1.4; display: flex; align-items: flex-start; gap: 8px; }
+    .notice-box i { font-size: 1rem; margin-top: 2px; flex-shrink: 0; }
+
     .admin-cards-container { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
     .admin-product-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
     .admin-card-top { display: flex; align-items: center; gap: 12px; }
@@ -168,6 +171,20 @@
     .toast.success { background: #166534; }
     .toast.error { background: #991b1b; }
 
+    /* حاوية الفاتورة للطباعة بدقة وبدون شاشة بيضاء */
+    #pdfPrintArea {
+      position: fixed;
+      top: 0;
+      left: -9999px;
+      width: 750px;
+      padding: 30px;
+      background: #ffffff;
+      color: #111827;
+      direction: rtl;
+      font-family: 'Tajawal', sans-serif;
+      z-index: -100;
+    }
+
     footer { background: var(--card-bg); border-top: 1px solid var(--border); padding: 24px 16px; text-align: center; margin-top: 40px; }
 
     @media(max-width:600px) {
@@ -194,6 +211,7 @@
     </div>
   </div>
 
+  <!-- نافذة التنبيه للصيانة وأوقات العمل -->
   <div id="statusModal" class="modal-overlay" style="z-index:10000;background:var(--bg)">
     <div class="modal-card" style="text-align:center;box-shadow:none;background:transparent">
       <div id="statusIcon" style="font-size:3.5rem;margin-bottom:16px">🛠️</div>
@@ -392,6 +410,12 @@
           <select id="paymentMethodSelect" class="order-input"></select>
         </div>
 
+        <!-- صندوق التنبيه لملاحظة الميزان -->
+        <div id="scaleOrderNoticeBox" class="notice-box" style="display:none;">
+          <i class="fa-solid fa-circle-info"></i>
+          <span id="scaleOrderNoticeText"></span>
+        </div>
+
         <div style="display:flex;gap:8px;margin-top:16px">
           <button class="btn-scale" style="background:var(--success);flex:2" onclick="sendWhatsAppOrder()"><i class="fa-brands fa-whatsapp"></i> إرسال الطلب (واتساب)</button>
           <button class="btn-scale" style="background:#475569;flex:1" onclick="downloadReceiptPDF()"><i class="fa-solid fa-file-pdf"></i> الفاتورة</button>
@@ -502,7 +526,6 @@
         <input type="text" id="setMaintenanceMsg" class="order-input" placeholder="رسالة الإغلاق التي تظهر للزبائن" style="margin-top:8px">
       </div>
 
-      <!-- قسم أوقات العمل والأيام الجديد والمطور -->
       <div class="settings-section">
         <h4><i class="fa-regular fa-clock"></i> أوقات العمل والعطلات</h4>
         <label style="display:flex;align-items:center;gap:8px;font-weight:800;margin-bottom:8px">
@@ -548,16 +571,20 @@
       </div>
 
       <div class="settings-section">
-        <h4><i class="fa-solid fa-truck"></i> سياسة الطلب والتوصيل</h4>
+        <h4><i class="fa-solid fa-truck"></i> سياسة الطلب والتوصيل وملاحظة الميزان</h4>
         <div class="order-option-group">
           <label>الحد الأدنى للطلب (د.ل):</label>
           <input type="number" id="setMinOrder" class="order-input" min="0">
         </div>
-        <div style="background:#f0fdf4;padding:8px;border-radius:8px;border:1px solid #bbf7d0">
+        <div style="background:#f0fdf4;padding:8px;border-radius:8px;border:1px solid #bbf7d0;margin-bottom:8px">
           <label style="color:#166534;font-weight:800;display:flex;align-items:center;gap:8px">
             <input type="checkbox" id="setFreeDelivActive"> تفعيل شريط التوصيل المجاني
           </label>
           <input type="number" id="setFreeDelivTarget" class="order-input" placeholder="قيمة الطلب المطلوبة" style="margin-top:6px">
+        </div>
+        <div class="order-option-group">
+          <label>تنبيه الميزان (يظهر للزبون قبل إتمام الطلب):</label>
+          <input type="text" id="setScaleNoticeInput" class="order-input" placeholder="ملاحظة: أصناف الوزن تخضع للوزن الفعلي الدقيق في المحل، وقد يطرأ فرق طفيف جداً في السعر النهائي وفق الميزان.">
         </div>
       </div>
       
@@ -581,15 +608,31 @@
         </div>
       </div>
 
+      <!-- فصل طرق الدفع لكل خيار استلام -->
       <div class="settings-section">
-        <h4><i class="fa-solid fa-wallet"></i> طرق الدفع والاستلام</h4>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:.85rem;font-weight:700">
-          <label><input type="checkbox" id="chkDelivery"> توصيل</label>
-          <label><input type="checkbox" id="chkPickup"> استلام</label>
-          <div style="width:100%;border-top:1px dashed var(--border);margin:2px 0"></div>
-          <label><input type="checkbox" id="chkCash"> كاش</label>
-          <label><input type="checkbox" id="chkCard"> بطاقة</label>
-          <label><input type="checkbox" id="chkBank"> تحويل</label>
+        <h4><i class="fa-solid fa-wallet"></i> طرق الاستلام والدفع المستقلة</h4>
+        <div style="margin-bottom:8px;font-weight:800;font-size:.85rem">طرق الاستلام المتاحة:</div>
+        <div style="display:flex;gap:16px;font-size:.85rem;font-weight:700;margin-bottom:12px">
+          <label><input type="checkbox" id="chkDelivery"> 🛵 خدمة التوصيل</label>
+          <label><input type="checkbox" id="chkPickup"> 🛍️ الاستلام من الفرع</label>
+        </div>
+        
+        <div style="background:var(--card-bg);padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px">
+          <div style="font-size:.8rem;font-weight:800;color:var(--primary);margin-bottom:6px"><i class="fa-solid fa-truck"></i> طرق الدفع المسموحة للتوصيل:</div>
+          <div style="display:flex;gap:12px;font-size:.82rem;font-weight:700">
+            <label><input type="checkbox" id="chkDelivCash"> كاش عند الاستلام</label>
+            <label><input type="checkbox" id="chkDelivCard"> بطاقة مصرفية</label>
+            <label><input type="checkbox" id="chkDelivBank"> تحويل مصرفي</label>
+          </div>
+        </div>
+
+        <div style="background:var(--card-bg);padding:10px;border-radius:8px;border:1px solid var(--border)">
+          <div style="font-size:.8rem;font-weight:800;color:var(--primary);margin-bottom:6px"><i class="fa-solid fa-store"></i> طرق الدفع المسموحة للاستلام من المحل:</div>
+          <div style="display:flex;gap:12px;font-size:.82rem;font-weight:700">
+            <label><input type="checkbox" id="chkPickCash"> كاش</label>
+            <label><input type="checkbox" id="chkPickCard"> بطاقة / تداول</label>
+            <label><input type="checkbox" id="chkPickBank"> تحويل مصرفي</label>
+          </div>
         </div>
       </div>
 
@@ -621,32 +664,39 @@
     </div>
   </div>
 
-  <!-- PDF Print Area -->
-  <div id="pdfPrintArea" style="display:none;width:700px;padding:25px;background:#fff;color:#111827;direction:rtl">
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #c25e00;padding-bottom:12px;margin-bottom:16px">
+  <!-- حاوية PDF للطباعة (تظهر خارج الشاشة بدون display:none) -->
+  <div id="pdfPrintArea">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #c25e00;padding-bottom:14px;margin-bottom:16px">
       <div>
-        <h1 id="pdfStoreName" style="color:#c25e00;font-size:1.5rem;margin:0">كراتشي</h1>
-        <p style="font-size:.85rem;color:#6b7280;margin-top:4px">فاتورة مبيعات</p>
+        <h1 id="pdfStoreName" style="color:#c25e00;font-size:1.6rem;margin:0;font-weight:900">كراتشي</h1>
+        <p style="font-size:.85rem;color:#6b7280;margin-top:4px">فاتورة مبيعات معتمدة</p>
       </div>
-      <div style="text-align:left;font-size:.8rem;color:#4b5563">
+      <div style="text-align:left;font-size:.85rem;color:#4b5563">
         <div>التاريخ: <span id="pdfDate"></span></div>
         <div>رقم الطلب: #<span id="pdfId"></span></div>
       </div>
     </div>
-    <div style="background:#f9fafb;padding:10px;border-radius:6px;font-size:.85rem;margin-bottom:16px">
+    <div style="background:#f9fafb;padding:12px;border-radius:8px;font-size:.85rem;margin-bottom:16px;border:1px solid #e5e7eb;line-height:1.6">
       <div><strong>العميل:</strong> <span id="pdfClientName"></span> | <strong>الهاتف:</strong> <span id="pdfClientPhone"></span></div>
       <div><strong>الاستلام:</strong> <span id="pdfMethod"></span> - <span id="pdfAddress"></span></div>
       <div><strong>الدفع:</strong> <span id="pdfPayment"></span></div>
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:.85rem;margin-bottom:16px">
-      <thead><tr style="background:#f3f4f6;text-align:right;border-bottom:1px solid #e5e7eb"><th style="padding:8px">الصنف</th><th style="padding:8px">الكمية/الوزن</th><th style="padding:8px">السعر</th></tr></thead>
+      <thead>
+        <tr style="background:#f3f4f6;text-align:right;border-bottom:2px solid #e5e7eb">
+          <th style="padding:10px 8px">الصنف</th>
+          <th style="padding:10px 8px">الكمية/الوزن</th>
+          <th style="padding:10px 8px">السعر</th>
+        </tr>
+      </thead>
       <tbody id="pdfTableBody"></tbody>
     </table>
-    <div style="border-top:2px solid #e5e7eb;padding-top:10px;text-align:left">
-      <div style="font-size:.95rem">الإجمالي: <strong><span id="pdfGrossTotal"></span></strong> د.ل</div>
+    <div style="border-top:2px solid #e5e7eb;padding-top:12px;text-align:left">
+      <div style="font-size:.95rem">الإجمالي قبل الخصم: <strong><span id="pdfGrossTotal"></span></strong> د.ل</div>
       <div id="pdfDiscountRow" style="font-size:.95rem;color:#16a34a;font-weight:bold;display:none">إجمالي الخصومات: -<span id="pdfDiscountVal"></span> د.ل</div>
-      <div style="font-size:1.3rem;font-weight:900;color:#c25e00;margin-top:4px">الصافي: <span id="pdfTotalSum"></span> د.ل</div>
+      <div style="font-size:1.35rem;font-weight:900;color:#c25e00;margin-top:6px">المجموع الصافي: <span id="pdfTotalSum"></span> د.ل</div>
     </div>
+    <div id="pdfNoticeRow" style="margin-top:20px;padding-top:10px;border-top:1px dashed #d1d5db;font-size:.78rem;color:#6b7280;text-align:center;"></div>
   </div>
 
   <footer>
@@ -669,12 +719,22 @@
       businessHours: { active: false, openTime: "10:00", closeTime: "20:00", closedDays: [5] },
       minOrderValue: 20, suggestActive: true,
       freeDelivery: { active: true, target: 100 },
+      scaleNotice: "ملاحظة: أصناف الوزن تخضع للوزن الفعلي الدقيق في المحل، وقد يطرأ فرق طفيف جداً في السعر النهائي وفق الميزان.",
       promo: { active: false, percent: 10, label: "خصم خاص" },
       banners: { active: false, items: [] },
       categories: [ { id: "spices", name: "توابل وبهارات" }, { id: "canned", name: "معلبات وزيوت" }, { id: "nuts", name: "مكسرات" } ],
       branches: [ { name: "فرع قرقارش", mapUrl: "" }, { name: "فرع أبو ستة", mapUrl: "" } ],
       social: { facebook: "", instagram: "", tiktok: "" },
-      paymentDelivery: { delivery: true, pickup: true, cash: true, card: true, bank: true }
+      paymentDelivery: { 
+        delivery: true, 
+        pickup: true, 
+        delivCash: true, 
+        delivCard: false, 
+        delivBank: true, 
+        pickCash: true, 
+        pickCard: true, 
+        pickBank: true 
+      }
     };
 
     const DEFAULT_INITIAL_PRODUCTS = [
@@ -719,7 +779,8 @@
           businessHours: { ...DEFAULT_CONFIG.businessHours, ...(record.config.businessHours||{}) },
           freeDelivery: { ...DEFAULT_CONFIG.freeDelivery, ...(record.config.freeDelivery||{}) }, 
           promo: { ...DEFAULT_CONFIG.promo, ...(record.config.promo||{}) },
-          social: { ...DEFAULT_CONFIG.social, ...(record.config.social||{}) }
+          social: { ...DEFAULT_CONFIG.social, ...(record.config.social||{}) },
+          paymentDelivery: { ...DEFAULT_CONFIG.paymentDelivery, ...(record.config.paymentDelivery||{}) }
         };
         applyTheme(); renderCategoryNav(); renderStoreProducts(); checkStoreStatus();
         setCloudStatus('<i class="fa-solid fa-cloud"></i> متصل بالسحابة');
@@ -755,7 +816,6 @@
     
     function toggleDarkMode() { document.body.classList.toggle("dark-mode"); document.getElementById("darkIcon").className = document.body.classList.contains("dark-mode") ? "fa-solid fa-sun" : "fa-solid fa-moon"; }
 
-    // فحص ساعات العمل والصيانة
     function checkStoreStatus() {
       const modal = document.getElementById("statusModal");
       const title = document.getElementById("statusTitle");
@@ -890,7 +950,6 @@
       });
     }
 
-    // تكبير الصورة بجودة أصلية
     function openLightbox(src, title) {
       document.getElementById("lightboxImg").src = src;
       document.getElementById("lightboxTitle").innerText = title || "";
@@ -1095,6 +1154,16 @@
         else { document.getElementById("freeDeliveryMsg").innerText = "أضف المزيد لتوصيل مجاني"; document.getElementById("freeDeliveryVal").innerText = `باقي ${(target-t.net).toFixed(2)} د.ل`; }
       } else { fdBox.style.display = "none"; }
 
+      // إظهار ملاحظة الميزان إن وجدت
+      const noticeBox = document.getElementById("scaleOrderNoticeBox");
+      const noticeText = document.getElementById("scaleOrderNoticeText");
+      if(storeConfig.scaleNotice && storeConfig.scaleNotice.trim() !== "") {
+        noticeText.innerText = storeConfig.scaleNotice.trim();
+        noticeBox.style.display = "flex";
+      } else {
+        noticeBox.style.display = "none";
+      }
+
       const minWarning = document.getElementById("minOrderWarning"), formArea = document.getElementById("checkoutFormArea");
       if(t.net > 0 && t.net < storeConfig.minOrderValue) {
         minWarning.innerText = `الحد الأدنى للطلب هو ${storeConfig.minOrderValue} د.ل`;
@@ -1122,20 +1191,41 @@
     function clearCartConfirm() { if(cart.length>0 && confirm("تفريغ السلة؟")) { cart=[]; updateCartUI(); openCartModal(); } }
 
     function renderOrderOptions() {
-      const pd = storeConfig.paymentDelivery; const tog = document.getElementById("deliveryToggleBox"); tog.innerHTML = "";
+      const pd = storeConfig.paymentDelivery || {};
+      const tog = document.getElementById("deliveryToggleBox"); 
+      tog.innerHTML = "";
+      
       if(pd.delivery) tog.innerHTML += `<button id="btnDeliv" class="btn-action ${orderMethod==='delivery'?'active':''}" style="flex:1;justify-content:center" onclick="setOrderMethod('delivery')">🛵 توصيل</button>`;
       if(pd.pickup) tog.innerHTML += `<button id="btnPick" class="btn-action ${orderMethod==='pickup'?'active':''}" style="flex:1;justify-content:center" onclick="setOrderMethod('pickup')">🛍️ استلام</button>`;
       
-      if(orderMethod==='delivery' && !pd.delivery) orderMethod='pickup'; if(orderMethod==='pickup' && !pd.pickup) orderMethod='delivery';
+      if(orderMethod==='delivery' && !pd.delivery) orderMethod='pickup';
+      if(orderMethod==='pickup' && !pd.pickup) orderMethod='delivery';
+      
       setOrderMethod(orderMethod);
 
-      const branchSel = document.getElementById("pickupBranchSelect"); branchSel.innerHTML="";
-      storeConfig.branches.forEach(b => branchSel.add(new Option(b.name, b.name)));
+      const branchSel = document.getElementById("pickupBranchSelect"); 
+      branchSel.innerHTML="";
+      (storeConfig.branches||[]).forEach(b => branchSel.add(new Option(b.name, b.name)));
+    }
 
-      const paySel = document.getElementById("paymentMethodSelect"); paySel.innerHTML="";
-      if(pd.cash) paySel.add(new Option("الدفع عند الاستلام (كاش)", "كاش"));
-      if(pd.card) paySel.add(new Option("بطاقة مصرفية / تداول", "بطاقة"));
-      if(pd.bank) paySel.add(new Option("تحويل مصرفي", "تحويل"));
+    function updatePaymentOptions() {
+      const pd = storeConfig.paymentDelivery || {};
+      const paySel = document.getElementById("paymentMethodSelect");
+      paySel.innerHTML = "";
+      
+      if(orderMethod === 'delivery') {
+        if(pd.delivCash) paySel.add(new Option("الدفع عند الاستلام (كاش)", "كاش عند الاستلام"));
+        if(pd.delivCard) paySel.add(new Option("بطاقة مصرفية / تداول", "بطاقة مصرفية"));
+        if(pd.delivBank) paySel.add(new Option("تحويل مصرفي مسبق", "تحويل مصرفي"));
+      } else {
+        if(pd.pickCash) paySel.add(new Option("الدفع في المحل (كاش)", "كاش في المحل"));
+        if(pd.pickCard) paySel.add(new Option("بطاقة مصرفية / تداول (نقطة بيع)", "بطاقة / تداول"));
+        if(pd.pickBank) paySel.add(new Option("تحويل مصرفي", "تحويل مصرفي"));
+      }
+
+      if(paySel.options.length === 0) {
+        paySel.add(new Option("طريقة الدفع بالتنسيق مع الإدارة", "بالتنسيق مع الإدارة"));
+      }
     }
 
     function setOrderMethod(m) {
@@ -1144,6 +1234,7 @@
       if(document.getElementById("btnPick")) document.getElementById("btnPick").className = `btn-action ${m==='pickup'?'active':''}`;
       document.getElementById("deliveryAddressSection").style.display = m==='delivery'?'block':'none';
       document.getElementById("pickupBranchSection").style.display = m==='pickup'?'block':'none';
+      updatePaymentOptions();
     }
 
     function loadCustomerInfo() {
@@ -1185,6 +1276,10 @@
       
       if(storeConfig.freeDelivery.active && t.net >= storeConfig.freeDelivery.target && orderMethod==='delivery') msg+="\n🎉 (مشمول بالتوصيل المجاني)";
 
+      if(storeConfig.scaleNotice && storeConfig.scaleNotice.trim() !== "") {
+        msg += `\n━━━━━━━━━━━━━━━━\n⚖️ *${storeConfig.scaleNotice.trim()}*`;
+      }
+
       const waNum = storeConfig.whatsappNumber.replace(/\D/g,'');
       window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, "_blank");
     }
@@ -1194,7 +1289,9 @@
       saveCustomerInfo();
       currentOrderId = currentOrderId || String(new Date().getFullYear()).slice(-2) + String(new Date().getMonth()+1).padStart(2,'0') + String(new Date().getDate()).padStart(2,'0') + "-" + Math.floor(1000+Math.random()*9000);
       
-      document.getElementById("pdfDate").innerText = new Date().toLocaleString("ar-LY"); document.getElementById("pdfId").innerText = currentOrderId;
+      document.getElementById("pdfDate").innerText = new Date().toLocaleString("ar-LY"); 
+      document.getElementById("pdfId").innerText = currentOrderId;
+      document.getElementById("pdfStoreName").innerText = storeConfig.storeName;
       document.getElementById("pdfClientName").innerText = document.getElementById("orderCustomerName").value || "زبون محترم";
       document.getElementById("pdfClientPhone").innerText = document.getElementById("orderPhone").value || "-";
       document.getElementById("pdfMethod").innerText = orderMethod==='delivery' ? "توصيل" : "استلام من الفرع";
@@ -1204,18 +1301,48 @@
       const tbody = document.getElementById("pdfTableBody"); tbody.innerHTML = "";
       cart.forEach(item => {
         let meta = item.type==='unit'?`${item.qty} قطع`:`${item.qty} جم`; if(item.grinding) meta+=` (${item.grinding})`;
-        tbody.innerHTML += `<tr style="border-bottom:1px solid #e5e7eb"><td style="padding:8px">${item.name}</td><td style="padding:8px">${meta}</td><td style="padding:8px;font-weight:bold">${item.price.toFixed(2)}</td></tr>`;
+        tbody.innerHTML += `<tr style="border-bottom:1px solid #e5e7eb"><td style="padding:10px 8px">${item.name}</td><td style="padding:10px 8px">${meta}</td><td style="padding:10px 8px;font-weight:bold">${item.price.toFixed(2)} د.ل</td></tr>`;
       });
 
       const t = getCartTotals();
       document.getElementById("pdfGrossTotal").innerText = t.gross.toFixed(2);
       const discRow = document.getElementById("pdfDiscountRow");
-      if(t.bogoDiscount+t.promoDiscount > 0) { discRow.style.display="block"; document.getElementById("pdfDiscountVal").innerText = (t.bogoDiscount+t.promoDiscount).toFixed(2); } else discRow.style.display="none";
+      if(t.bogoDiscount+t.promoDiscount > 0) { 
+        discRow.style.display="block"; 
+        document.getElementById("pdfDiscountVal").innerText = (t.bogoDiscount+t.promoDiscount).toFixed(2); 
+      } else {
+        discRow.style.display="none"; 
+      }
       document.getElementById("pdfTotalSum").innerText = t.net.toFixed(2);
 
-      const el = document.getElementById("pdfPrintArea"); el.style.display = "block";
-      try { await html2pdf().set({ margin:10, filename:`فاتورة_${currentOrderId}.pdf`, image:{type:'jpeg',quality:1}, html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} }).from(el).save(); } 
-      catch(e) { showToast("تعذر إنشاء الفاتورة", "error"); } finally { el.style.display = "none"; }
+      const noticeRow = document.getElementById("pdfNoticeRow");
+      if(storeConfig.scaleNotice && storeConfig.scaleNotice.trim() !== "") {
+        noticeRow.innerText = `⚖️ ${storeConfig.scaleNotice.trim()}`;
+        noticeRow.style.display = "block";
+      } else {
+        noticeRow.style.display = "none";
+      }
+
+      showToast("جاري إعداد وتحميل الفاتورة...", "success");
+      
+      // إعطاء المتصفح مهلة بسيطة لضمان اكتمال بناء عناصر الـ DOM
+      await new Promise(r => setTimeout(r, 250));
+
+      const el = document.getElementById("pdfPrintArea");
+      const opt = {
+        margin: 10,
+        filename: `فاتورة_${currentOrderId}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      try { 
+        await html2pdf().set(opt).from(el).save(); 
+        showToast("تم تحميل الفاتورة بنجاح", "success");
+      } catch(e) { 
+        showToast("تعذر إنشاء الفاتورة", "error"); 
+      }
     }
 
     function handleSecretAdminClick() {
@@ -1361,16 +1488,29 @@
       document.getElementById("setMinOrder").value = storeConfig.minOrderValue;
       document.getElementById("setFreeDelivActive").checked = !!storeConfig.freeDelivery.active;
       document.getElementById("setFreeDelivTarget").value = storeConfig.freeDelivery.target;
+      document.getElementById("setScaleNoticeInput").value = storeConfig.scaleNotice || "";
+      
       document.getElementById("setSuggestActive").checked = !!storeConfig.suggestActive;
       document.getElementById("setPromoActive").checked = !!storeConfig.promo.active;
       document.getElementById("setPromoPercent").value = storeConfig.promo.percent;
       document.getElementById("setPromoLabel").value = storeConfig.promo.label;
-      const pd = storeConfig.paymentDelivery;
-      document.getElementById("chkDelivery").checked = pd.delivery; document.getElementById("chkPickup").checked = pd.pickup;
-      document.getElementById("chkCash").checked = pd.cash; document.getElementById("chkCard").checked = pd.card; document.getElementById("chkBank").checked = pd.bank;
+      
+      const pd = storeConfig.paymentDelivery || {};
+      document.getElementById("chkDelivery").checked = !!pd.delivery; 
+      document.getElementById("chkPickup").checked = !!pd.pickup;
+      
+      document.getElementById("chkDelivCash").checked = pd.delivCash !== undefined ? !!pd.delivCash : true;
+      document.getElementById("chkDelivCard").checked = pd.delivCard !== undefined ? !!pd.delivCard : false;
+      document.getElementById("chkDelivBank").checked = pd.delivBank !== undefined ? !!pd.delivBank : true;
+
+      document.getElementById("chkPickCash").checked = pd.pickCash !== undefined ? !!pd.pickCash : true;
+      document.getElementById("chkPickCard").checked = pd.pickCard !== undefined ? !!pd.pickCard : true;
+      document.getElementById("chkPickBank").checked = pd.pickBank !== undefined ? !!pd.pickBank : true;
+
       document.getElementById("setWhatsapp").value = storeConfig.whatsappNumber;
       document.getElementById("setAdminPass").value = storeConfig.adminPass;
-      renderAdminBranchesSettings(); document.getElementById("settingsModal").style.display="flex";
+      renderAdminBranchesSettings(); 
+      document.getElementById("settingsModal").style.display="flex";
     }
 
     function renderAdminBranchesSettings() {
@@ -1414,9 +1554,22 @@
 
       storeConfig.minOrderValue = Number(document.getElementById("setMinOrder").value)||0;
       storeConfig.freeDelivery = { active: document.getElementById("setFreeDelivActive").checked, target: Number(document.getElementById("setFreeDelivTarget").value)||100 };
+      storeConfig.scaleNotice = document.getElementById("setScaleNoticeInput").value.trim();
+      
       storeConfig.suggestActive = document.getElementById("setSuggestActive").checked;
       storeConfig.promo = { active: document.getElementById("setPromoActive").checked, percent: Number(document.getElementById("setPromoPercent").value)||0, label: document.getElementById("setPromoLabel").value||"خصم" };
-      storeConfig.paymentDelivery = { delivery: document.getElementById("chkDelivery").checked, pickup: document.getElementById("chkPickup").checked, cash: document.getElementById("chkCash").checked, card: document.getElementById("chkCard").checked, bank: document.getElementById("chkBank").checked };
+      
+      storeConfig.paymentDelivery = { 
+        delivery: document.getElementById("chkDelivery").checked, 
+        pickup: document.getElementById("chkPickup").checked, 
+        delivCash: document.getElementById("chkDelivCash").checked,
+        delivCard: document.getElementById("chkDelivCard").checked,
+        delivBank: document.getElementById("chkDelivBank").checked,
+        pickCash: document.getElementById("chkPickCash").checked,
+        pickCard: document.getElementById("chkPickCard").checked,
+        pickBank: document.getElementById("chkPickBank").checked
+      };
+
       storeConfig.whatsappNumber = document.getElementById("setWhatsapp").value;
       storeConfig.adminPass = document.getElementById("setAdminPass").value || "1311";
       storeConfig.branches = tempBranches.filter(b=>b.name.trim()!=="");
